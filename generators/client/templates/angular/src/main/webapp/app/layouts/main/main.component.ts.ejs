@@ -1,0 +1,141 @@
+<%#
+ Copyright 2013-2018 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRouteSnapshot, NavigationEnd } from '@angular/router';
+
+<%_ if (enableTranslation) { _%>
+import { JhiLanguageHelper } from 'app/core';
+<%_ } else { _%>
+import { Title } from '@angular/platform-browser';
+<%_ } _%>
+import { NzMessageService } from 'ng-zorro-antd';
+import { Subscription } from 'rxjs/index';
+import { JhiEventManager } from 'ng-jhipster';
+import { MAIN_MENU } from 'app/shared';
+
+@Component({
+    selector: '<%= jhiPrefixDashed %>-main',
+    templateUrl: './main.component.html'
+})
+export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy {
+
+    alerts: any[];
+    isCollapsed: boolean;
+    cleanHttpErrorListener: Subscription;
+    mainMenu = MAIN_MENU;
+
+    constructor(
+        <%_ if (enableTranslation) { _%>
+        private jhiLanguageHelper: JhiLanguageHelper,
+        <%_ } else { _%>
+        private titleService: Title,
+        <%_ } _%>
+        private messageService: NzMessageService,
+        private eventManager: JhiEventManager,
+        private router: Router
+    ) {
+        this.alerts = [];
+        this.cleanHttpErrorListener = eventManager.subscribe('bigbugApp.httpError', response => {
+            let i;
+            const httpErrorResponse = response.content;
+            switch (httpErrorResponse.status) {
+                // connection refused, server not reachable
+                case 0:
+                    this.addErrorMessage('Server not reachable', 'error.server.not.reachable');
+                    break;
+
+                case 400:
+                    const arr = httpErrorResponse.headers.keys();
+                    let errorHeader = null;
+                    let entityKey = null;
+                    arr.forEach(entry => {
+                        if (entry.endsWith('app-error')) {
+                            errorHeader = httpErrorResponse.headers.get(entry);
+                        } else if (entry.endsWith('app-params')) {
+                            entityKey = httpErrorResponse.headers.get(entry);
+                        }
+                    });
+                    if (errorHeader) {
+                        const entityName = entityKey;
+                        this.addErrorMessage(errorHeader, errorHeader, {entityName});
+                    } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.fieldErrors) {
+                        const fieldErrors = httpErrorResponse.error.fieldErrors;
+                        for (i = 0; i < fieldErrors.length; i++) {
+                            const fieldError = fieldErrors[i];
+                            // convert 'something[14].other[4].id' to 'something[].other[].id' so translations can be written to it
+                            const convertedField = fieldError.field.replace(/\[\d*\]/g, '[]');
+                            const fieldName = convertedField.charAt(0).toUpperCase() + convertedField.slice(1);
+                            this.addErrorMessage('Error on field "' + fieldName + '"', 'error.' + fieldError.message, {fieldName});
+                        }
+                    } else if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
+                        this.addErrorMessage(
+                            httpErrorResponse.error.message,
+                            httpErrorResponse.error.message,
+                            httpErrorResponse.error.params
+                        );
+                    } else {
+                        this.addErrorMessage(httpErrorResponse.error);
+                    }
+                    break;
+
+                case 404:
+                    this.addErrorMessage('Not found', 'error.url.not.found');
+                    break;
+
+                default:
+                    if (httpErrorResponse.error !== '' && httpErrorResponse.error.message) {
+                        this.addErrorMessage(httpErrorResponse.error.message);
+                    } else {
+                        this.addErrorMessage(httpErrorResponse.error);
+                    }
+            }
+        });
+    }
+
+    private getPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
+        let title: string = (routeSnapshot.data && routeSnapshot.data['pageTitle']) ? routeSnapshot.data['pageTitle'] : '<%= angularAppName %>';
+        if (routeSnapshot.firstChild) {
+            title = this.getPageTitle(routeSnapshot.firstChild) || title;
+        }
+        return title;
+    }
+
+    private addErrorMessage(message, key?, data?) {
+        this.messageService.error(message);
+    }
+
+    ngOnInit() {
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                <%_ if (enableTranslation) { _%>
+                this.jhiLanguageHelper.updateTitle(this.getPageTitle(this.router.routerState.snapshot.root));
+                <%_ } else { _%>
+                this.titleService.setTitle(this.getPageTitle(this.router.routerState.snapshot.root));
+                <%_ } _%>
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        if (this.cleanHttpErrorListener !== undefined && this.cleanHttpErrorListener !== null) {
+            this.eventManager.destroy(this.cleanHttpErrorListener);
+            this.alerts = [];
+        }
+    }
+}

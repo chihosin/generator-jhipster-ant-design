@@ -1,0 +1,118 @@
+<%#
+ Copyright 2013-2018 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+<<%= jhiPrefixDashed %>-page-ribbon></<%= jhiPrefixDashed %>-page-ribbon>
+<nz-layout class="main-layout">
+    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate" [nzBreakpoint]="'lg'">
+        <div class="logo">
+        </div>
+        <ul class="scrollable-main-sider" nz-menu [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+            <li nz-menu-item
+                routerLink="/"
+                [routerLinkActiveOptions]="{exact: true}"
+                routerLinkActive="ant-menu-item-selected">
+                <i class="anticon anticon-home"></i>
+                <span class="nav-text">Home</span>
+            </li>
+            <ng-container *ngFor="let menuItem of mainMenu">
+                <ng-container *ngIf="!menuItem.subMenu">
+                    <li nz-menu-item
+                        *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority"
+                        routerLink="{{menuItem.link}}"
+                        [routerLinkActiveOptions]="{exact: true}"
+                        routerLinkActive="ant-menu-item-selected">
+                        <i class="anticon {{menuItem.iconClass}}"></i>
+                        <span class="nav-text">{{menuItem.title}}</span>
+                    </li>
+                </ng-container>
+                <ng-container *ngIf="menuItem.subMenu">
+                    <li nz-submenu *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
+                        <span title>
+                            <i class="anticon {{menuItem.iconClass}}"></i>
+                            <span class="nav-text">{{menuItem.title}}</span>
+                        </span>
+                        <ul>
+                            <ng-container *ngFor="let subMenuItem of menuItem.subMenu">
+                                <ng-container *ngIf="!subMenuItem.subMenu">
+                                    <li nz-menu-item
+                                        *<%= jhiPrefix %>HasAnyAuthority="subMenuItem.hasAnyAuthority"
+                                        routerLink="{{subMenuItem.link}}"
+                                        routerLinkActive="ant-menu-item-selected">
+                                        {{subMenuItem.title}}
+                                    </li>
+                                </ng-container>
+                                <ng-container *ngIf="subMenuItem.subMenu">
+                                    <li nz-submenu
+                                        *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
+                                        <span title class="pl-lg">{{subMenuItem.title}}</span>
+                                        <ul>
+                                            <ng-container *ngFor="let leafMenuItem of subMenuItem.subMenu">
+                                                <li *<%= jhiPrefix %>HasAnyAuthority="leafMenuItem.hasAnyAuthority"
+                                                    nz-menu-item
+                                                    routerLink="{{leafMenuItem.link}}"
+                                                    routerLinkActive="ant-menu-item-selected">
+                                                    <span class="pl-lg">{{leafMenuItem.title}}</span>
+                                                </li>
+                                            </ng-container>
+                                        </ul>
+                                    </li>
+                                </ng-container>
+                            </ng-container>
+                        </ul>
+                    </li>
+                </ng-container>
+            </ng-container>
+        </ul>
+    </nz-sider>
+    <nz-layout>
+        <nz-header>
+            <div class="top-nav-wrap">
+                <i class="anticon trigger" [class.anticon-menu-fold]="!isCollapsed"
+                   [class.anticon-menu-unfold]="isCollapsed"
+                   (click)="isCollapsed=!isCollapsed"></i>
+                <ul class="top-nav">
+                    <li>
+                        <nz-dropdown nzplacement="bottomRight">
+                            <a nz-dropdown>
+                                <nz-avatar nzIcon="anticon anticon-user"></nz-avatar>
+                                <span class="top-nav-userinfo"> User <i class="anticon anticon-down"></i></span>
+                            </a>
+                            <ul nz-menu nzSelectable>
+                                <li nz-menu-item>
+                                    <a>1st menu item</a>
+                                </li>
+                                <li nz-menu-item>
+                                    <a>2nd menu item</a>
+                                </li>
+                                <li nz-menu-item>
+                                    <a>3rd menu item</a>
+                                </li>
+                            </ul>
+                        </nz-dropdown>
+                    </li>
+                </ul>
+            </div>
+        </nz-header>
+        <div class="scrollable-main-content">
+            <nz-content>
+                <router-outlet></router-outlet>
+                <<%= jhiPrefixDashed %>-footer></<%= jhiPrefixDashed %>-footer>
+            </nz-content>
+        </div>
+    </nz-layout>
+</nz-layout>

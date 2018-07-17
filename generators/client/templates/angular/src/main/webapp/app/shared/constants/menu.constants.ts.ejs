@@ -1,0 +1,71 @@
+export const MAIN_MENU = [
+    {
+        title: 'Entities',
+        iconClass: 'anticon-link',
+        hasAnyAuthority: ['ROLE_USER'],
+        subMenu: [
+            {}
+            /* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */
+        ]
+    },
+    {
+        title: 'Management',
+        iconClass: 'anticon-tool',
+        hasAnyAuthority: ['ROLE_ADMIN'],
+        subMenu: [
+            <%_ if (applicationType === 'gateway' && serviceDiscoveryType) { _%>
+            {
+                title: 'Gateway',
+                link: 'admin/gateway',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            <%_ } _%>
+            <%_ if (!skipUserManagement) { _%>
+            {
+                title: 'User management',
+                link: 'admin/user-management',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            <%_ } _%>
+            <%_ if (websocket === 'spring-websocket') { _%>
+            {
+                title: 'User tracker',
+                link: 'admin/<%= jhiPrefixDashed %>-tracker',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            <%_ } _%>
+            {
+                title: 'Metrics',
+                link: 'admin/<%= jhiPrefixDashed %>-metrics',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            {
+                title: 'Health',
+                link: 'admin/<%= jhiPrefixDashed %>-health',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            {
+                title: 'Configuration',
+                link: 'admin/<%= jhiPrefixDashed %>-configuration',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            <%_ if (databaseType !== 'no' && databaseType !== 'cassandra') { _%>
+            {
+                title: 'Audits',
+                link: 'admin/audits',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            <%_ } _%>
+            {
+                title: 'Logs',
+                link: 'admin/logs',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            },
+            {
+                title: 'Docs',
+                link: 'admin/docs',
+                hasAnyAuthority: ['ROLE_ADMIN'],
+            }
+        ]
+    }
+];
