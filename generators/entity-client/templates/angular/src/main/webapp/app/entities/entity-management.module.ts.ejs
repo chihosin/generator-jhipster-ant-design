@@ -28,15 +28,14 @@ import {
     <%= entityAngularName %>Component,
     <%= entityAngularName %>DetailComponent,
     <%= entityAngularName %>UpdateComponent,
-    <%= entityAngularName %>DeletePopupComponent,
-    <%= entityAngularName %>DeleteDialogComponent,
-    <%= entityInstance %>Route,
-    <%= entityInstance %>PopupRoute
+    <%= entityAngularName %>ListComponent,
+    <%= entityAngularName %>FormComponent,
+    <%= entityAngularName %>ViewComponent,
+    <%= entityInstance %>Route
 } from './';
 
 const ENTITY_STATES = [
     ...<%= entityInstance %>Route,
-    ...<%= entityInstance %>PopupRoute,
 ];
 
 @NgModule({
@@ -52,14 +51,17 @@ const ENTITY_STATES = [
         <%= entityAngularName %>Component,
         <%= entityAngularName %>DetailComponent,
         <%= entityAngularName %>UpdateComponent,
-        <%= entityAngularName %>DeleteDialogComponent,
-        <%= entityAngularName %>DeletePopupComponent,
+        <%= entityAngularName %>ListComponent,
+        <%= entityAngularName %>FormComponent,
+        <%= entityAngularName %>ViewComponent,
     ],
     entryComponents: [
         <%= entityAngularName %>Component,
+        <%= entityAngularName %>DetailComponent,
         <%= entityAngularName %>UpdateComponent,
-        <%= entityAngularName %>DeleteDialogComponent,
-        <%= entityAngularName %>DeletePopupComponent,
+        <%= entityAngularName %>ListComponent,
+        <%= entityAngularName %>FormComponent,
+        <%= entityAngularName %>ViewComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

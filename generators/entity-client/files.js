@@ -33,10 +33,22 @@ const angularFiles = {
                     renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityFileName}-update.component.html`
                 },
                 {
-                    file: 'entities/entity-management-delete-dialog.component.html',
+                    file: 'entities/entity-component-view.component.html',
                     method: 'processHtml',
                     template: true,
-                    renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityFileName}-delete-dialog.component.html`
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-view.component.html`
+                },
+                {
+                    file: 'entities/entity-component-form.component.html',
+                    method: 'processHtml',
+                    template: true,
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-form.component.html`
+                },
+                {
+                    file: 'entities/entity-component-list.component.html',
+                    method: 'processHtml',
+                    template: true,
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-list.component.html`
                 },
                 {
                     file: 'entities/index.ts',
@@ -64,16 +76,28 @@ const angularFiles = {
                     renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityFileName}-update.component.ts`
                 },
                 {
-                    file: 'entities/entity-management-delete-dialog.component.ts',
-                    renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityFileName}-delete-dialog.component.ts`
-                },
-                {
                     file: 'entities/entity-management-detail.component.ts',
                     renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityFileName}-detail.component.ts`
                 },
                 {
+                    file: 'entities/entity-component-form.component.ts',
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-form.component.ts`
+                },
+                {
+                    file: 'entities/entity-component-list.component.ts',
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-list.component.ts`
+                },
+                {
+                    file: 'entities/entity-component-view.component.ts',
+                    renameTo: generator => `entities/${generator.entityFolderName}/components/${generator.entityFileName}-view.component.ts`
+                },
+                {
                     file: 'entities/entity.service.ts',
                     renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityServiceFileName}.service.ts`
+                },
+                {
+                    file: 'entities/entity-modal.service.ts',
+                    renameTo: generator => `entities/${generator.entityFolderName}/${generator.entityServiceFileName}-modal.service.ts`
                 }
             ]
         }
@@ -89,10 +113,6 @@ const angularFiles = {
                 {
                     file: 'spec/app/entities/entity-management-update.component.spec.ts',
                     renameTo: generator => `spec/app/entities/${generator.entityFolderName}/${generator.entityFileName}-update.component.spec.ts`
-                },
-                {
-                    file: 'spec/app/entities/entity-management-delete-dialog.component.spec.ts',
-                    renameTo: generator => `spec/app/entities/${generator.entityFolderName}/${generator.entityFileName}-delete-dialog.component.spec.ts`
                 },
                 {
                     file: 'spec/app/entities/entity-management.component.spec.ts',

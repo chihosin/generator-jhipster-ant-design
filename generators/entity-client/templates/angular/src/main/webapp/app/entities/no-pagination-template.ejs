@@ -16,65 +16,166 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+    @Input() mode = 'tableList';
+    @Input() modal = false;
     <%= entityInstancePlural %>: I<%= entityAngularName %>[];
     currentAccount: any;
     eventSubscriber: Subscription;
     <%_ if (searchEngine === 'elasticsearch') { _%>
     currentSearch: string;
     <%_ } _%>
+    pageIndex: number;
+    pageSize: number;
+    totalItems: number;
+    loading: boolean;
+    expandSearchForm: boolean;
+    filters: any;
+    sorter: any;
+    selectedAll: boolean;
+    selectedIndeterminate: boolean;
+    selectedComparator: Function;
+    selected: Array<I<%= entityAngularName %>>;
+    batchDeleteConfirmModal: NzModalRef;
+    <%_ const textsAlreadyDeclared = [];
+    fields.forEach(field => {
+        if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
+            textsAlreadyDeclared.push(field.fieldType); _%>
+    <%= field.fieldName %>Text = <%= field.fieldType %>Text;
+    <%_ }
+    }); _%>
 
     constructor(
         private <%= entityInstance %>Service: <%= entityAngularName %>Service,
-        private jhiAlertService: JhiAlertService,
+        private messageService: NzMessageService,
+        private modalService: NzModalService,
         <%_ if (fieldsContainBlob) { _%>
         private dataUtils: JhiDataUtils,
         <%_ } _%>
         private eventManager: JhiEventManager,
-        <%_ if (searchEngine === 'elasticsearch') { _%>
-        private activatedRoute: ActivatedRoute,
-        <%_ } _%>
-        private principal: Principal
+        private principal: Principal,
+        public <%= entityInstance %>ModalService: <%= entityAngularName %>ModalService
     ) {
-        <%_ if (searchEngine === 'elasticsearch') { _%>
-        this.currentSearch = this.activatedRoute.snapshot && this.activatedRoute.snapshot.params['search'] ?
-            this.activatedRoute.snapshot.params['search'] : '';
-        <%_ } _%>
+        this.pageIndex = 1;
+        this.expandSearchForm = false;
+        this.loading = true;
+        this.selectedAll = false;
+        this.<%= entityInstancePlural %> = [];
+        this.selected = [];
+        this.pageSize = ITEMS_PER_PAGE;
+        this.sorter = null;
+        this.filters = {
+            _all: null,
+            id: null,
+            <%_ for (idx in fields) {
+                const fieldName = fields[idx].fieldName;
+                const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
+                const fieldNameHumanized = fields[idx].fieldNameHumanized;
+                const fieldType = fields[idx].fieldType;
+                const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent; _%>
+            <%= fieldName %>: null,
+            <%_ } _%>
+        };
+        this.selectedComparator = item => {
+            return this.selected.some(value => value.id === item.id);
+        };
     }
 
-    loadAll() {
+    loadAll(reset?): void {
+        if (reset) {
+            this.pageIndex = 1;
+        }
+        this.loading = true;
         <%_ if (searchEngine === 'elasticsearch') { _%>
         if (this.currentSearch) {
-            this.<%= entityInstance %>Service.search({
-                query: this.currentSearch,
-                }).subscribe(
-                    (res: HttpResponse<I<%= entityAngularName %>[]>) => this.<%= entityInstancePlural %> = res.body,
+            this.<%= entityInstance %>Service
+                .search({
+                    query: this.currentSearch
+                })
+                .subscribe(
+                    (res: HttpResponse<I<%= entityAngularName %>[]>) => {
+                        this.<%= entityInstancePlural %> = res.body;
+                        this.totalItems = this.<%= entityInstancePlural %>.length;
+                        this.sort();
+                        this.loading = false;
+                    },
                     (res: HttpErrorResponse) => this.onError(res.message)
                 );
             return;
-       }
-       <%_ } _%>
+        }
+        <%_ } _%>
         this.<%= entityInstance %>Service.query().subscribe(
             (res: HttpResponse<I<%= entityAngularName %>[]>) => {
                 this.<%= entityInstancePlural %> = res.body;
-                <%_ if (searchEngine === 'elasticsearch') { _%>
+                this.totalItems = this.<%= entityInstancePlural %>.length;
+                this.sort();
                 this.currentSearch = '';
-                <%_ } _%>
+                this.loading = false;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
     }
-    <%_ if (searchEngine === 'elasticsearch') { _%>
 
-    search(query) {
-        if (!query) {
-            return this.clear();
+    sort() {
+        if (this.sorter) {
+            this.<%= entityInstancePlural %> = [
+                ...this.<%= entityInstancePlural %>.sort(
+                    (a, b) =>
+                        this.sorter.value === 'asc'
+                            ? a[this.sorter.key] > b[this.sorter.key] ? 1 : -1
+                            : b[this.sorter.key] > a[this.sorter.key] ? 1 : -1
+                )
+            ];
         }
-        this.currentSearch = query;
-        this.loadAll();
+    }
+    <%_ if (searchEngine === 'elasticsearch') { _%>
+    search() {
+        const DEFAULT_QUERY = '*:*';
+        if (this.filters.id) {
+            this.currentSearch += ` AND id:*${this.filters.id}*`;
+        }
+        <%_ for (idx in fields) {
+            const fieldName = fields[idx].fieldName;
+            const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
+            const fieldNameHumanized = fields[idx].fieldNameHumanized;
+            const fieldType = fields[idx].fieldType;
+            const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
+            const fieldIsEnum = fields[idx].fieldIsEnum _%>
+        <%_ if (fieldIsEnum) { _%>
+        if (this.filters.<%= fieldName %> && this.filters.<%= fieldName %>.length > 0) {
+            this.currentSearch += ` AND <%= fieldName %>:${this.filters.<%= fieldName %>}`;
+        }
+        <%_ } else { _%>
+        if (this.filters.<%= fieldName %>) {
+            this.currentSearch += ` AND <%= fieldName %>:*${this.filters.<%= fieldName %>}*`;
+        }
+        <%_ } _%>
+        <%_ } _%>
+        if (this.currentSearch === DEFAULT_QUERY) {
+            this.currentSearch = null;
+        }
+        if(this.filters._all){
+            this.currentSearch = `*:*${this.filters._all}*`;
+        }
+        this.loadAll(true);
     }
 
     clear() {
-        this.currentSearch = '';
-        this.loadAll();
+        this.currentSearch = null;
+        this.selected = [];
+        this.selectedAll = false;
+        this.selectedIndeterminate = false;
+        this.filters = {
+            _all: null,
+            id: null,
+            <%_ for (idx in fields) {
+                const fieldName = fields[idx].fieldName;
+                const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
+                const fieldNameHumanized = fields[idx].fieldNameHumanized;
+                const fieldType = fields[idx].fieldType;
+                const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent; _%>
+            <%= fieldName %>: null,
+            <%_ } _%>
+        };
+        this.loadAll(true);
     }
     <%_ } _%>

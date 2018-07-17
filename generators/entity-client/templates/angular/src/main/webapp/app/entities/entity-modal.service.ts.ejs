@@ -1,0 +1,105 @@
+<%#
+ Copyright 2013-2018 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { Injectable } from '@angular/core';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd';
+
+import { <%= entityAngularName %>ViewComponent } from 'app/entities/<%= entityModelFileName %>/components/<%= entityModelFileName %>-view.component';
+import { <%= entityAngularName %>FormComponent } from 'app/entities/<%= entityModelFileName %>/components/<%= entityModelFileName %>-form.component';
+import { <%= entityAngularName %>Service } from 'app/entities/<%= entityModelFileName %>/<%= entityModelFileName %>.service';
+import { I<%= entityAngularName %>, <%= entityAngularName %> } from 'app/shared/model/<%= entityModelFileName %>.model';
+
+@Injectable({providedIn: 'root'})
+export class <%= entityAngularName %>ModalService {
+
+    private modals: Map<string, NzModalRef>;
+
+    constructor(
+        private <%= entityInstance %>Service: <%= entityAngularName %>Service,
+        private modalService: NzModalService
+    ) {
+        this.modals = new Map<string, NzModalRef>();
+    }
+
+
+    createViewModal(id: number, afterOpen?: Function, afterClose?: Function) {
+        const createModal = (<%= entityInstance %>?: I<%= entityAngularName %>) => {
+            const modalId = String(Math.random() * 100);
+            const modal = this.modalService.create({
+                nzTitle: '<%= entityClassPlural %>',
+                nzFooter: null,
+                nzContent: <%= entityAngularName %>ViewComponent,
+                nzWidth: '800px',
+                nzBodyStyle: { padding: 0 },
+                nzComponentParams: {
+                    mode: 'tabView',
+                    <%= entityInstance %>: <%= entityInstance %>,
+                    modalId: modalId
+                }
+            });
+            this.modals.set(modalId, modal);
+            if (afterOpen) {
+                modal.afterOpen.subscribe(() => afterOpen());
+            }
+            if (afterClose) {
+                modal.afterClose.subscribe(() => afterClose());
+            }
+        };
+        this.regionService.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
+    }
+
+    createEditModal(id?: number, afterOpen?: Function, afterClose?: Function) {
+        const createModal = (<%= entityInstance %>?: I<%= entityAngularName %>) => {
+            const modalId = String(Math.random() * 100);
+            const modal = this.modalService.create({
+                nzTitle: '<%= entityClassPlural %>',
+                nzFooter: null,
+                nzContent: <%= entityAngularName %>FormComponent,
+                nzWidth: '800px',
+                nzBodyStyle: { padding: 0 },
+                nzComponentParams: {
+                    mode: 'tabForm',
+                    <%= entityInstance %>: <%= entityInstance %>,
+                    parentModalId: modalId,
+                    parentModalService: this
+                }
+            });
+            this.modals.set(modalId, modal);
+            if (afterOpen) {
+                modal.afterOpen.subscribe(() => afterOpen());
+            }
+            if (afterClose) {
+                modal.afterClose.subscribe(() => afterClose());
+            }
+        };
+        if (id) {
+            this.regionService.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
+        } else {
+            createModal(new <%= entityAngularName %>());
+        }
+    }
+
+    closeModal(modalId: string) {
+        this.modals.get(modalId).close();
+        this.modals.delete(modalId);
+    }
+
+    private createNotFoundModal() {
+        this.modalService.error({ nzTitle: 'Oops!', nzContent: 'The item is not found' });
+    }
+}

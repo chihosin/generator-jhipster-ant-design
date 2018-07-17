@@ -1,0 +1,164 @@
+<%#
+ Copyright 2013-2018 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { HttpErrorResponse, <%_ if (pagination !== 'no') { _%>HttpHeaders, <% } %>HttpResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs/index';
+import { JhiEventManager, <% if (pagination !== 'no') { %>JhiParseLinks, <% } %>JhiAlertService<% if (fieldsContainBlob) { %>, JhiDataUtils<% } %> } from 'ng-jhipster';
+import { NzMessageService, NzModalRef, NzModalService } from 'ng-zorro-antd';
+import { Principal } from 'app/core';
+import { ITEMS_PER_PAGE } from 'app/shared';
+import {
+    I<%= entityAngularName %>,
+    <%_ const textsAlreadyDeclared = [];
+    fields.forEach(field => {
+        if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
+            textsAlreadyDeclared.push(field.fieldType); _%>
+    <%= field.fieldType %>Text,
+    <%_ }
+    }); _%>
+} from 'app/shared/model/<%= entityModelFileName %>.model';
+import { <%= entityAngularName %>Service } from '../<%= entityFileName %>.service';
+import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-modal.service';
+
+@Component({
+    selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-list',
+    templateUrl: './<%= entityFileName %>-list.component.html',
+})
+export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy {
+    <%_ if (pagination === 'pagination' || pagination === 'pager') { _%>
+<%- include('pagination-template', {toArrayString: toArrayString}); -%>
+    <%_ } else if (pagination === 'infinite-scroll') { _%>
+<%- include('infinite-scroll-template', {toArrayString: toArrayString}); -%>
+    <%_ } else if (pagination === 'no') { _%>
+<%- include('no-pagination-template', {toArrayString: toArrayString}); -%>
+    <%_ } _%>
+    updateFilter(key: string, value: any): void {
+        this.filters[key] = value;
+        this.search();
+    }
+
+    updateSort(sort: { key: string; value: string }) {
+        if (sort.value == null) {
+            sort.key = 'id';
+            sort.value = 'ascend';
+        }
+        this.sorter = {
+            key: sort.key,
+            value: sort.value.replace('end', '')
+        };
+        this.sort();
+    }
+
+    updateSelected(isSelected, item?: I<%= entityAngularName %>) {
+        if (!item) {
+            isSelected ? this.selected.push(...this.<%= entityInstancePlural %>) : (this.selected = []);
+        } else {
+            isSelected ? this.selected.push(item) : (this.selected = this.selected.filter(value => value.id !== item.id));
+        }
+        this.selected = Array.from(new Set(this.selected));
+        this.selectedAll = this.selected.length >= this.totalItems;
+        this.selectedIndeterminate = this.selected.length > 0 && !this.selectedAll;
+    }
+
+    delete(item: I<%= entityAngularName %>) {
+        this.<%= entityInstance %>Service.delete(item.id).subscribe(response => {
+            this.eventManager.broadcast({
+                name: '<%= entityInstance %>ListModification',
+                content: 'Deleted an <%= entityInstance %>'
+            });
+        });
+    }
+
+    batchDelete() {
+        this.batchDeleteConfirmModal = this.modalService.confirm({
+            nzTitle: '你确定要删除这些项目?',
+            nzContent: `所选中的 ${this.selected.length} 项将会被删除，且无法恢复`,
+            nzOkType: 'danger',
+            nzOnOk: () =>
+                new Promise((resolve, reject) => {
+                    let index = 0;
+                    const loop = () => {
+                        this.<%= entityInstance %>Service.delete(this.selected[index].id).subscribe(
+                            response => {
+                                if (index === this.selected.length - 1) {
+                                    this.eventManager.broadcast({
+                                        name: '<%= entityInstance %>ListModification',
+                                        content: 'Deleted an <%= entityInstance %>'
+                                    });
+                                    resolve();
+                                } else {
+                                    index++;
+                                    loop();
+                                }
+                            },
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    };
+                    loop();
+                })
+        });
+    }
+    ngOnInit() {
+        this.loadAll();
+        this.principal.identity().then(account => {
+            this.currentAccount = account;
+        });
+        this.registerChangeIn<%= entityClassPlural %>();
+    }
+
+    ngOnDestroy() {
+        this.eventManager.destroy(this.eventSubscriber);
+    }
+
+    // noinspection JSMethodCanBeStatic
+    trackId(index: number, item: I<%= entityAngularName %>) {
+        return item.id;
+    }
+    <%_ if (fieldsContainBlob) { _%>
+
+    byteSize(field) {
+        return this.dataUtils.byteSize(field);
+    }
+
+    openFile(contentType, field) {
+        return this.dataUtils.openFile(contentType, field);
+    }
+    <%_ } _%>
+    <%_
+    let eventCallBack = 'this.loadAll(true);';
+    if (pagination === 'infinite-scroll') {
+        eventCallBack = 'this.clear();';
+    } _%>
+
+    registerChangeIn<%= entityClassPlural %>() {
+        this.eventSubscriber = this.eventManager.subscribe('<%= entityInstance %>ListModification', response => {
+            this.selected = [];
+            this.selectedAll = false;
+            this.selectedIndeterminate = false;
+            <%= eventCallBack %>
+        });
+    }
+
+    private onError(errorMessage: string) {
+        this.loading = false;
+        this.messageService.error(errorMessage);
+    }
+}

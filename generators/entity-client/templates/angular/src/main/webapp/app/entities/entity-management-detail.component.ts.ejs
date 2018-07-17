@@ -17,46 +17,10 @@
  limitations under the License.
 -%>
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-<%_ if (fieldsContainBlob) { _%>
-import { JhiDataUtils } from 'ng-jhipster';
-<%_ } _%>
-
-import { I<%= entityAngularName %> } from 'app/shared/model/<%= entityModelFileName %>.model';
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-detail',
     templateUrl: './<%= entityFileName %>-detail.component.html'
 })
 export class <%= entityAngularName %>DetailComponent implements OnInit {
-
-    <%= entityInstance %>: I<%= entityAngularName %>;
-
-    constructor(
-        <%_ if (fieldsContainBlob) { _%>
-        private dataUtils: JhiDataUtils,
-        <%_ } _%>
-        private activatedRoute: ActivatedRoute
-    ) {
-    }
-
-    ngOnInit() {
-        this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
-            this.<%= entityInstance %> = <%= entityInstance %>;
-        });
-    }
-
-    <%_ if (fieldsContainBlob) { _%>
-    byteSize(field) {
-        return this.dataUtils.byteSize(field);
-    }
-
-    openFile(contentType, field) {
-        return this.dataUtils.openFile(contentType, field);
-    }
-    <%_ } _%>
-    previousState() {
-        window.history.back();
-    }
-
 }

@@ -54,3 +54,26 @@ export class <%= entityAngularName %> implements I<%= entityAngularName %> {
         <%- defaultVariablesValues[idx] %><% } %>
     }
 }
+
+
+<%_ const textsAlreadyDeclared = [];
+fields.forEach(field => {
+    if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
+        textsAlreadyDeclared.push(field.fieldType); _%>
+export const <%= field.fieldType %>Text = {
+    text: {
+    <% const texts = field.fieldValues.split(',');
+        for (let i = 0; i < texts.length; i++) { %>
+        <%= texts[i] %>: '<%= texts[i] %>'<%if (i < texts.length - 1) { %>,<% }
+    } %>
+    },
+    filter: [
+    <% const filters = field.fieldValues.split(',');
+        for (let i = 0; i < filters.length; i++) { %>
+        {text: '<%= filters[i] %>', value: '<%= filters[i] %>'}<%if (i < filters.length - 1) { %>,<% }
+    } %>
+    ]
+};
+
+<%_ }
+}); _%>
