@@ -16,3 +16,64 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+<%_ if (fieldsContainBlob) { _%>
+import { JhiDataUtils } from 'ng-jhipster';
+<%_ } _%>
+import {
+I<%= entityAngularName %>,
+<%_ const textsImportAlreadyDeclared = [];
+fields.forEach(field => {
+if (field.fieldIsEnum && !textsImportAlreadyDeclared.includes(field.fieldType)) {
+    textsImportAlreadyDeclared.push(field.fieldType); _%>
+<%= field.fieldType %>Text,
+<%_ }
+}); _%>
+} from 'app/shared/model/<%= entityModelFileName %>.model';
+import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-modal.service';
+
+@Component({
+selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-view',
+templateUrl: './<%= entityFileName %>-view.component.html',
+})
+export class <%= entityAngularName %>ViewComponent implements OnInit {
+    @Input() mode = 'basicView';
+    @Input() <%= entityInstance %>: I<%= entityAngularName %>;
+    <%_ const textsAlreadyDeclared = [];
+    fields.forEach(field => {
+        if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
+            textsAlreadyDeclared.push(field.fieldType); _%>
+    <%= field.fieldName %>Text = <%= field.fieldType %>Text;
+    <%_ }
+    }); _%>
+
+    constructor(
+        <%_ if (fieldsContainBlob) { _%>
+        private dataUtils: JhiDataUtils,
+        <%_ } _%>
+        private activatedRoute: ActivatedRoute,
+    ) {}
+
+    ngOnInit() {
+        if (!this.<%= entityInstance %>) {
+            this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
+                this.<%= entityInstance %> = <%= entityInstance %>;
+            });
+        }
+    }
+
+    <%_ if (fieldsContainBlob) { _%>
+    byteSize(field) {
+        return this.dataUtils.byteSize(field);
+    }
+
+    openFile(contentType, field) {
+        return this.dataUtils.openFile(contentType, field);
+    }
+    <%_ } _%>
+    // noinspection JSMethodCanBeStatic
+    previousState() {
+        window.history.back();
+    }
+}

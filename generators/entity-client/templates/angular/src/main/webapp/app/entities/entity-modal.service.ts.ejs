@@ -48,8 +48,9 @@ export class <%= entityAngularName %>ModalService {
                 nzBodyStyle: { padding: 0 },
                 nzComponentParams: {
                     mode: 'tabView',
-                    <%= entityInstance %>: <%= entityInstance %>,
-                    modalId: modalId
+                    <%= entityInstance %>,
+                    parentModalId: modalId,
+                    parentModalService: this
                 }
             });
             this.modals.set(modalId, modal);
@@ -60,7 +61,7 @@ export class <%= entityAngularName %>ModalService {
                 modal.afterClose.subscribe(() => afterClose());
             }
         };
-        this.regionService.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
+        this.<%= entityInstance %>Service.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
     }
 
     createEditModal(id?: number, afterOpen?: Function, afterClose?: Function) {
@@ -74,7 +75,7 @@ export class <%= entityAngularName %>ModalService {
                 nzBodyStyle: { padding: 0 },
                 nzComponentParams: {
                     mode: 'tabForm',
-                    <%= entityInstance %>: <%= entityInstance %>,
+                    <%= entityInstance %>,
                     parentModalId: modalId,
                     parentModalService: this
                 }
@@ -88,7 +89,7 @@ export class <%= entityAngularName %>ModalService {
             }
         };
         if (id) {
-            this.regionService.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
+            this.<%= entityInstance %>Service.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
         } else {
             createModal(new <%= entityAngularName %>());
         }

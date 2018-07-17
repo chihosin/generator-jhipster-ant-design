@@ -16,3 +16,112 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+<ng-container [ngSwitch]="mode">
+    <ng-container *ngSwitchCase="'basicView'">
+        <nz-card [nzBordered]="false">
+            <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
+            <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
+        </nz-card>
+    </ng-container>
+    <ng-container *ngSwitchCase="'tabView'">
+        <nz-tabset [nzTabPosition]="'left'">
+            <nz-tab [nzTitle]="'Basic'">
+                <nz-card [nzBordered]="false">
+                    <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
+                </nz-card>
+            </nz-tab>
+            <nz-tab [nzTitle]="'Relationship'">
+                <nz-card [nzBordered]="false">
+                    <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
+                </nz-card>
+            </nz-tab>
+        </nz-tabset>
+    </ng-container>
+    <ng-container *ngSwitchCase="'cardView'">
+        <nz-card [nzTitle]="'Basic'">
+            <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
+        </nz-card>
+        <nz-card [nzTitle]="'Relationship'">
+            <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
+        </nz-card>
+    </ng-container>
+</ng-container>
+<ng-template #basicDescList>
+    <desc-list size="large" [title]="mode !== 'cardView' ? 'Basic' : null" class="mb-lg">
+    <%_ for (idx in fields) {
+    const fieldName = fields[idx].fieldName;
+    const fieldType = fields[idx].fieldType;
+    const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
+    const fieldTitle = fields[idx].javadoc || fields[idx].fieldNameHumanized; _%>
+    <%_ if (fields[idx].fieldIsEnum) { _%>
+    <desc-list-item term="<%= fieldTitle %>">{{<%= fieldName %>Text.text[<%= entityInstance %>.<%= fieldName %>]}}</desc-list-item>
+    <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'image') { _%>
+    <div *ngIf="<%= entityInstance %>.<%= fieldName %>">
+        <a (click)="openFile(<%= entityInstance %>.<%= fieldName %>ContentType, <%= entityInstance %>.<%= fieldName %>)">
+            <img [src]="'data:' + <%=entityInstance %>.<%= fieldName %>ContentType + ';base64,' + <%= entityInstance %>.<%= fieldName %>" style="max-width: 100%;" alt="<%=entityInstance %> image"/>
+        </a>
+        {{<%= entityInstance %>.<%= fieldName %>ContentType}}, {{byteSize(<%= entityInstance %>.<%= fieldName %>)}}
+    </div>
+    <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'any') { _%>
+    <div *ngIf="<%= entityInstance %>.<%= fieldName %>">
+        <a (click)="openFile(<%= entityInstance %>.<%= fieldName %>ContentType, <%= entityInstance %>.<%= fieldName %>)" jhiTranslate="entity.action.open">open</a>
+        {{<%= entityInstance %>.<%= fieldName %>ContentType}}, {{byteSize(<%= entityInstance %>.<%= fieldName %>)}}
+    </div>
+    <%_ } else { _%>
+    <desc-list-item term="<%= fieldTitle %>">{{<%= entityInstance %>.<%= fieldName %>}}</desc-list-item>
+    <%_ } _%>
+    <%_ } _%>
+    </desc-list>
+</ng-template>
+<ng-template #relationshipDescList>
+<desc-list size="large" [title]="mode !== 'cardView' ? 'Relationship' : null" class="mb-lg">
+    <%_ for (idx in relationships) {
+    const relationshipType = relationships[idx].relationshipType;
+    const ownerSide = relationships[idx].ownerSide;
+    const relationshipName = relationships[idx].relationshipName;
+    const relationshipFieldName = relationships[idx].relationshipFieldName;
+    const relationshipFieldNamePlural = relationships[idx].relationshipFieldNamePlural;
+    const relationshipNameHumanized = relationships[idx].relationshipNameHumanized;
+    const otherEntityName = relationships[idx].otherEntityName;
+    const otherEntityStateName = relationships[idx].otherEntityStateName;
+    const otherEntityField = relationships[idx].otherEntityField;
+    const otherEntityFieldCapitalized = relationships[idx].otherEntityFieldCapitalized;
+    const relationshipTitle = relationships[idx].javadoc || relationships[idx].relationshipNameHumanized;
+    if (relationshipType === 'many-to-one'
+    || (relationshipType === 'one-to-one' && ownerSide === true)
+    || (relationshipType === 'many-to-many' && ownerSide === true)) { _%>
+    <desc-list-item term="<%= relationshipTitle %>">
+        <%_ if (otherEntityName === 'user') { _%>
+        <%_ if (relationshipType === 'many-to-many') { _%>
+        <span *ngFor="let <%= relationshipFieldName %> of <%= entityInstance %>.<%= relationshipFieldNamePlural %>; let last = last">
+            {{<%= relationshipFieldName %>.<%= otherEntityField %>}}{{last ? '' : ', '}}
+        </span>
+        <%_ } else { _%>
+        <%_ if (dto === 'no') { _%>
+        {{<%= entityInstance + "." + relationshipFieldName + "?." + otherEntityField %>}}
+        <%_ } else { _%>
+        {{<%= entityInstance + "." + relationshipFieldName + otherEntityFieldCapitalized %>}}
+        <%_ } _%>
+        <%_ } _%>
+        <%_ } else { _%>
+        <%_ if (relationshipType === 'many-to-many') { _%>
+        <span *ngFor="let <%= relationshipFieldName %> of <%= entityInstance %>.<%= relationshipFieldNamePlural %>; let last = last">
+            <a [routerLink]="['/<%= otherEntityStateName %>', <%= relationshipFieldName %>?.id, 'view' ]">{{<%= relationshipFieldName %>.<%= otherEntityField %>}}</a>{{last ? '' : ', '}}
+        </span>
+        <%_ } else { _%>
+        <%_ if (dto === 'no') { _%>
+        <div *ngIf="<%= entityInstance + '.' + relationshipFieldName %>">
+            <a [routerLink]="['/<%= otherEntityStateName %>', <%= entityInstance + '.' + relationshipFieldName + '?.id' %>, 'view']">{{<%= entityInstance + "." + relationshipFieldName + "?." + otherEntityField %>}}</a>
+        </div>
+        <%_ } else { _%>
+        <div *ngIf="<%= entityInstance + '.' + relationshipFieldName + "Id" %>">
+            <a [routerLink]="['/<%= otherEntityStateName %>', <%= entityInstance + '.' + relationshipFieldName + "Id" %>, 'view']">{{<%= entityInstance + "." + relationshipFieldName + otherEntityFieldCapitalized %>}}</a>
+        </div>
+        <%_ } _%>
+        <%_ } _%>
+        <%_ } _%>
+    </desc-list-item>
+    <%_ } _%>
+    <%_ } _%>
+</desc-list>
+</ng-template>
