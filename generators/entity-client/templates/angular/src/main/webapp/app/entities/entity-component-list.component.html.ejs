@@ -277,20 +277,15 @@
     <ng-container *ngSwitchCase="'cardList'">
         <nz-list [nzLoading]="loading" [nzDataSource]="<%= entityInstancePlural %>" [nzRenderItem]="item"
                  [nzGrid]="{gutter: 24, lg: 8, md: 12, sm: 24, xs: 24 }">
-            <nz-list-item>
-                <button nz-button [nzType]="'dashed'" class="card-list-btn-block"
-                        (click)="<%= entityInstance %>ModalService.createEditModal()">
-                    <i class="anticon anticon-plus"></i>
-                    <span>新增位置</span>
-                </button>
-            </nz-list-item>
-            <ng-template #item let-item>
-                <nz-list-item>
-                    <button *ngIf="item === null" nz-button [nzType]="'dashed'" class="card-list-btn-block"
-                            (click)="<%= entityInstance %>ModalService.createEditModal()">
+            <ng-template #item let-item let-index="index">
+                <nz-list-item *ngIf="index === 0">
+                    <button nz-button [nzType]="'dashed'" class="card-list-btn-block"
+                            (click)="deskModalService.createEditModal()">
                         <i class="anticon anticon-plus"></i>
-                        <span>新增位置</span>
+                        <span>新增</span>
                     </button>
+                </nz-list-item>
+                <nz-list-item>
                     <nz-card nzHoverable *ngIf="item !== null" [nzActions]="[show, edit, remove, more]"
                              style="width: 100%">
                         <ng-template #show>
@@ -321,7 +316,7 @@
                                 <nz-avatar nzSize="large" [nzSrc]="item.avatar"></nz-avatar>
                             </ng-template>
                             <ng-template #nzTitle>
-                                <a>标题</a>
+                                <a>{{item.id}}</a>
                             </ng-template>
                             <ng-template #nzDescription>
                                 <p class="card-list-block-description">内容</p>
@@ -410,7 +405,7 @@
                 <nz-list-item>
                     <nz-card nzHoverable [nzCover]="cover">
                         <ng-template #cover>
-                            <img alt="{{item.fullName}}"
+                            <img alt="{{item.id}}"
                                  src="https://gw.alipayobjects.com/zos/rmsportal/HrxcVbrKnCJOZvtzSqjN.png">
                         </ng-template>
                         <nz-card-meta [nzTitle]="nzTitle" [nzDescription]="'内容'">
@@ -459,7 +454,7 @@
                                 </ul>
                             </nz-dropdown>
                         </ng-template>
-                        <nz-card-meta [nzTitle]="item.fullName" [nzAvatar]="nzAvatar">
+                        <nz-card-meta [nzTitle]="item.id" [nzAvatar]="nzAvatar">
                             <ng-template #nzAvatar>
                                 <nz-avatar nzSize="small"
                                            [nzSrc]="'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png'"></nz-avatar>
