@@ -204,7 +204,8 @@
     <ng-container *ngSwitchCase="'basicList'">
         <nz-card [nzBordered]="false">
             <div class="d-flex align-items-center mb-lg">
-                <h3 class="flex-1 text-lg">区域列表</h3>
+                <h3 class="flex-1 text-lg">列表</h3>
+                <%_ if (searchEngine === 'elasticsearch') { _%>
                 <div style="display: inherit;">
                     <form nz-form (ngSubmit)="search()" class="filter-form">
                         <nz-input-group nzSuffixIcon="anticon anticon-search" class="basic-list-input-group">
@@ -213,6 +214,7 @@
                         </nz-input-group>
                     </form>
                 </div>
+                <%_ } _%>
             </div>
             <button nz-button [nzType]="'dashed'" class="basic-list-btn-block mb-sm"
                     (click)="<%= entityInstance %>ModalService.createEditModal()">
