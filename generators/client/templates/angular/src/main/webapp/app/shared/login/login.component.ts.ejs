@@ -55,12 +55,22 @@ export class <%=jhiPrefixCapitalized%>LoginModalComponent implements AfterViewIn
             password: [null, [Validators.required]],
             phoneNumber: [null, [Validators.required, Validators.pattern(PHONE_FORMAT)]],
             verifyCode: [null, [Validators.required]],
-            rememberMe: [false]
+            rememberMe: [true]
         });
     }
 
     ngAfterViewInit() {
         this.renderer.invokeElementMethod(this.elementRef.nativeElement.querySelector('#username'), 'focus', []);
+    }
+
+    cancel() {
+        this.credentials = {
+            username: null,
+            password: null,
+            rememberMe: true
+        };
+        this.authenticationError = false;
+        this.previousState();
     }
 
     login() {

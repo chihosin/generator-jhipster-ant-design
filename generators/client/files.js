@@ -8,6 +8,7 @@ const files = {
             templates: [
                 'shared/constants/menu.constants.ts',
                 'layouts/search/search.component.ts',
+                'shared/constants/pattern.constants.ts',
                 {
                     file: 'layouts/search/search.component.html',
                     method: 'processHtml'
@@ -25,12 +26,6 @@ const files = {
                     file: 'admin/logs/logs.component.scss',
                     method: 'processHtml'
                 }
-            ]
-        },
-        {
-            path: ANGULAR_DIR,
-            templates: [
-                'shared/constants/pattern.constants.ts',
             ]
         }
     ],
