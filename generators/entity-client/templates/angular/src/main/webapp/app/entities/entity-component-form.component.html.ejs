@@ -25,10 +25,10 @@
             <ng-template #extraTemplate>
                 <nz-form-item style="margin-bottom: -8px;margin-top: -8px;">
                     <nz-form-control>
-                        <button nz-button nzType="primary" [disabled]="!validateForm.valid" [nzLoading]="isSaving">
+                        <button nz-button nzType="primary" [disabled]="!validateForm.valid || validateForm.pristine" [nzLoading]="isSaving">
                             保存
                         </button>
-                        <button class="ml-sm" nz-button (click)="reset($event)" [disabled]="isSaving">重置</button>
+                        <button class="ml-sm" nz-button (click)="reset($event)" [disabled]="isSaving || validateForm.pristine">重置</button>
                     </nz-form-control>
                 </nz-form-item>
             </ng-template>
@@ -43,12 +43,12 @@
                         <ng-template #action>
                             <nz-form-item style="margin-bottom: 0;">
                                 <nz-form-control>
-                                    <button nz-button nzType="primary" [disabled]="!validateForm.valid"
+                                    <button nz-button nzType="primary" [disabled]="!validateForm.valid || validateForm.pristine"
                                             [nzLoading]="isSaving">
                                         保存
                                     </button>
                                     <button class="ml-sm" nz-button (click)="reset($event)"
-                                            [disabled]="isSaving">
+                                            [disabled]="isSaving || validateForm.pristine">
                                         重置
                                     </button>
                                 </nz-form-control>

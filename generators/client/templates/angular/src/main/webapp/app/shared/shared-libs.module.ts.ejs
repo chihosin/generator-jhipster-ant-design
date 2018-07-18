@@ -26,6 +26,9 @@ import { CookieModule } from 'ngx-cookie';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgZorroAntdModule, NZ_MESSAGE_CONFIG } from 'ng-zorro-antd';
 import { AdDescListModule, AdPageHeaderModule, AdNoticeIconModule } from '@delon/abc';
+import { registerLocaleData } from '@angular/common';
+import en from '@angular/common/locales/zh';
+registerLocaleData(zh);
 
 @NgModule({
     imports: [

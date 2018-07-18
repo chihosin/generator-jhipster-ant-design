@@ -17,10 +17,23 @@
  limitations under the License.
 -%>
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { I<%= entityAngularName %> } from 'app/shared/model/<%= entityModelFileName %>.model';
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-detail',
     templateUrl: './<%= entityFileName %>-detail.component.html'
 })
-export class <%= entityAngularName %>DetailComponent {
+export class <%= entityAngularName %>DetailComponent implements OnInit {
+    <%= entityInstance %>: I<%= entityAngularName %>;
+
+    constructor(
+        private activatedRoute: ActivatedRoute,
+    ) {}
+
+    ngOnInit() {
+        this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
+            this.<%= entityInstance %> = <%= entityInstance %>;
+        });
+    }
 }

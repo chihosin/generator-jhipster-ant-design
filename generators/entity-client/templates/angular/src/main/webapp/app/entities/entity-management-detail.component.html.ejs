@@ -30,6 +30,9 @@
             </nz-breadcrumb-item>
         </nz-breadcrumb>
     </ng-template>
+    <ng-template #action>
+        <button nz-button nzType="primary" [routerLink]="['/<%= entityFileName %>', <%= entityInstance %>.id, 'edit']">编辑</button>
+    </ng-template>
 </page-header>
 <div class="page-content">
     <<%= jhiPrefixDashed %>-<%= entityFileName %>-view [mode]="'cardView'"></<%= jhiPrefixDashed %>-<%= entityFileName %>-view>

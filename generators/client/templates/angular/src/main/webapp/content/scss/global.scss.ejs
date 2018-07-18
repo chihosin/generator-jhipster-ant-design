@@ -35,112 +35,22 @@ Browser Upgrade Prompt
 }
 
 /* ==========================================================================
-Main layout styles
-========================================================================== */
-.main-layout {
-
-    nz-layout {
-        height: 100vh;
-        overflow: auto;
-    }
-
-    nz-header {
-        background: rgba(0, 0, 0, 0.1);
-        padding: 0;
-        width: 100%;
-
-        .trigger {
-            font-size: 18px;
-            line-height: 64px;
-            padding: 0 24px;
-            cursor: pointer;
-            transition: color .3s;
-        }
-
-        .trigger:hover {
-            color: #1890ff;
-        }
-
-        .top-nav-wrap {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            padding-right: 16px;
-        }
-
-        .top-nav {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-        }
-
-        .top-nav > li {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        .top-nav-userinfo {
-            padding: 8px;
-        }
-    }
-
-    nz-sider {
-
-        .logo {
-            height: 32px;
-            background: rgba(255, 255, 255, .2);
-            margin: 16px;
-        }
-
-        .scrollable-main-sider {
-            height: calc(100vh - 64px);
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        .ant-menu-inline .ant-menu-item, .ant-menu-inline .ant-menu-submenu-title {
-            width: 100%;
-        }
-    }
-
-    .ant-layout-sider {
-        background: rgba(0, 0, 0, 0.1);
-    }
-
-    .scrollable-main-content {
-        height: calc(100vh - 64px);
-        overflow: auto;
-    }
-}
-
-/* ==========================================================================
 Generic styles
 ========================================================================== */
-.row {
-    margin-right: 0;
-    margin-left: 0;
-}
-
 /* jhipster-needle-scss-add-main JHipster will add new css style */
 
 body {
-    .ad-ph {
-        padding: 16px 16px 0;
+    .content__title {
+        margin-right: 0px;
+        margin-left: 0px;
+
         .row {
-            margin-left: 0;
-            margin-right: 0;
+            margin-right: 0px;
+            margin-left: 0px;
         }
     }
-    .content__title {
-        margin-left: 0;
-        margin-right: 0;
-        margin-bottom: 12px;
-    }
-    .ant-card-body {
-        padding: 12px;
-    }
-    .page-card {
-        margin: 12px;
+
+    .page-content {
+        padding: 0 16px 16px 16px;
     }
 }
