@@ -8,6 +8,12 @@ const files = {
             templates: [
                 'shared/constants/menu.constants.ts',
             ]
+        },
+        {
+            path: ANGULAR_DIR,
+            templates: [
+                'shared/constants/pattern.constants.ts',
+            ]
         }
     ],
 };

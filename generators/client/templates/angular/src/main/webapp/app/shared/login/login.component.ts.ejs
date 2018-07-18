@@ -16,24 +16,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
-import { Component, AfterViewInit, Renderer, ElementRef } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, AfterViewInit, Renderer, Input, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { JhiEventManager } from 'ng-jhipster';
 
 import { LoginService } from 'app/core/login/login.service';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {LoginModalService} from "app/core/login/login-modal.service";
+import {PHONE_FORMAT} from "app/shared/constants/pattern.constants";
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-login-modal',
     templateUrl: './login.component.html'
 })
 export class <%=jhiPrefixCapitalized%>LoginModalComponent implements AfterViewInit {
+    @Input() parentModalId: string;
+    @Input() parentModalService: LoginModalService;
     authenticationError: boolean;
-    password: string;
-    rememberMe: boolean;
-    username: string;
+    validateForm: FormGroup;
     credentials: any;
+    loginWithUserName = true;
+    errorMessage: string;
+    interval = 0;
 
     constructor(
         private eventManager: JhiEventManager,
@@ -42,33 +47,33 @@ export class <%=jhiPrefixCapitalized%>LoginModalComponent implements AfterViewIn
         private elementRef: ElementRef,
         private renderer: Renderer,
         private router: Router,
-        public activeModal: NgbActiveModal
+        private fb: FormBuilder
     ) {
         this.credentials = {};
+        this.validateForm = this.fb.group({
+            username: [null, [Validators.required]],
+            password: [null, [Validators.required]],
+            phoneNumber: [null, [Validators.required, Validators.pattern(PHONE_FORMAT)]],
+            verifyCode: [null, [Validators.required]],
+            rememberMe: [false]
+        });
     }
 
     ngAfterViewInit() {
         this.renderer.invokeElementMethod(this.elementRef.nativeElement.querySelector('#username'), 'focus', []);
     }
 
-    cancel() {
-        this.credentials = {
-            username: null,
-            password: null,
-            rememberMe: true
-        };
-        this.authenticationError = false;
-        this.activeModal.dismiss('cancel');
-    }
-
     login() {
         this.loginService.login({
-            username: this.username,
-            password: this.password,
-            rememberMe: this.rememberMe
+            username: this.loginWithUserName
+                    ? this.validateForm.controls['username'].value
+                    : this.validateForm.controls['phoneNumber'].value,
+            password: this.validateForm.controls['password'].value,
+            verifyCode: this.validateForm.controls['verifyCode'].value,
+            rememberMe: this.validateForm.controls['rememberMe'].value
         }).then(() => {
             this.authenticationError = false;
-            this.activeModal.dismiss('login success');
+            this.previousState();
             if (this.router.url === '/register' || (/^\/activate\//.test(this.router.url)) ||
                 (/^\/reset\//.test(this.router.url))) {
                 this.router.navigate(['']);
@@ -92,12 +97,37 @@ export class <%=jhiPrefixCapitalized%>LoginModalComponent implements AfterViewIn
     }
 
     register() {
-        this.activeModal.dismiss('to state register');
+        this.previousState();
         this.router.navigate(['/register']);
     }
 
     requestResetPassword() {
-        this.activeModal.dismiss('to state requestReset');
+        this.previousState();
         this.router.navigate(['/reset', 'request']);
+    }
+
+    previousState() {
+        this.parentModalService.closeModal(this.parentModalId);
+    }
+
+    getCaptcha() {
+        if (this.interval > 0) {
+            return;
+        }
+        this.interval = 60;
+        const timer = setInterval(() => {
+            this.interval--;
+            if (this.interval < 1) {
+                clearInterval(timer);
+            }
+        }, 1000);
+        this.loginService.getVerifyCode(this.validateForm.controls['phoneNumber'].value).subscribe(null, err => {
+            if (err.error.title === 'Phone number not registered') {
+                this.errorMessage = '该手机号码还没注册';
+                this.authenticationError = true;
+            }
+            this.interval = 0;
+            clearInterval(timer);
+        });
     }
 }
