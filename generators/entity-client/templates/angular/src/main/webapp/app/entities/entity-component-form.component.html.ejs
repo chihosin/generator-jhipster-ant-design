@@ -16,3 +16,112 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+<form nz-form [formGroup]="validateForm" (ngSubmit)="save($event,validateForm.value)">
+    <ng-container [ngSwitch]="mode">
+        <ng-container *ngSwitchCase="'cardForm'">
+            <nz-card [nzBordered]="true" nzTitle="基础" [nzExtra]="extraTemplate">
+                <ng-container [ngTemplateOutlet]="basicForm"></ng-container>
+            </nz-card>
+            <ng-template #extraTemplate>
+                <nz-form-item style="margin-bottom: -8px;margin-top: -8px;">
+                    <nz-form-control>
+                        <button nz-button nzType="primary" [disabled]="!validateForm.valid" [nzLoading]="isSaving">
+                            保存
+                        </button>
+                        <button class="ml-sm" nz-button (click)="reset($event)" [disabled]="isSaving">重置</button>
+                    </nz-form-control>
+                </nz-form-item>
+            </ng-template>
+        </ng-container>
+        <ng-container *ngSwitchCase="'tabForm'">
+            <nz-tabset [nzTabPosition]="'left'">
+                <nz-tab [nzTitle]="'基础'">
+                    <nz-card class="tab-form-card" [nzBordered]="false"
+                             style="margin-left: -24px;margin-bottom: 0 !important;"
+                             [nzActions]="[null,null,null,action]">
+                        <ng-container [ngTemplateOutlet]="basicForm"></ng-container>
+                        <ng-template #action>
+                            <nz-form-item style="margin-bottom: 0;">
+                                <nz-form-control>
+                                    <button nz-button nzType="primary" [disabled]="!validateForm.valid"
+                                            [nzLoading]="isSaving">
+                                        保存
+                                    </button>
+                                    <button class="ml-sm" nz-button (click)="reset($event)"
+                                            [disabled]="isSaving">
+                                        重置
+                                    </button>
+                                </nz-form-control>
+                            </nz-form-item>
+                        </ng-template>
+                    </nz-card>
+                </nz-tab>
+            </nz-tabset>
+        </ng-container>
+    </ng-container>
+    <ng-template #basicForm>
+        <nz-row nzGutter="16">
+        <%_ for (idx in fields) {
+            const fieldName = fields[idx].fieldName;
+            const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
+            const fieldNameHumanized = fields[idx].fieldNameHumanized;
+            const fieldType = fields[idx].fieldType;
+            const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
+            const fieldTitle = fields[idx].javadoc || fields[idx].fieldNameHumanized;
+            const fieldIsUnique = false;
+            for (idrx in fields[idx].fieldValidateRules) {
+                const rule = fields[idx].fieldValidateRules[idrx];
+                if (rule === 'unique') {
+                    const fieldIsUnique = true;
+                }
+            }
+            _%>
+            <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="null" nzRequired><%= fieldTitle %></nz-form-label>
+                    <nz-form-control [nzSpan]="null" nzHasFeedback>
+                        <input nz-input formControlName="<%= fieldName %>" placeholder="">
+                        <nz-form-explain *ngIf="validateForm.get('<%= fieldName %>').dirty && validateForm.get('<%= fieldName %>').errors<%_ if (fieldIsUnique) { _%> || validateForm.get('<%= fieldName %>').pending<%_ } _%>">
+                        <%_ for (idrx in fields[idx].fieldValidateRules) {
+                            const rule = fields[idx].fieldValidateRules[idrx] _%>
+                        <%_ if (rule === 'required') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('required')">
+                                请输入字段值
+                            </ng-container>
+                        <%_ } else if (rule === 'unique') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('duplicated')">
+                                已存在
+                            </ng-container>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').pending">
+                                检查中...
+                            </ng-container>
+                        <%_ } else if (rule === 'minlength') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('minLength')">
+                                请输入不少于 <%= fields[idx].fieldValidateRulesMinlength %> 个字符
+                            </ng-container>
+                        <%_ } else if (rule === 'maxlength') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('maxLength')">
+                                请输入不多于 <%= fields[idx].fieldValidateRulesMaxlength %> 个字符
+                            </ng-container>
+                        <%_ } else if (rule === 'min') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('min')">
+                                请输入不小于 <%= fields[idx].fieldValidateRulesMin %> 的数值
+                            </ng-container>
+                        <%_ } else if (rule === 'max') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('max')">
+                                请输入不大于 <%= fields[idx].fieldValidateRulesMax %> 的数值
+                            </ng-container>
+                        <%_ } else if (rule === 'pattern') { _%>
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('pattern')">
+                                未符合 '<%= fields[idx].fieldValidateRulesPattern %>' 规则
+                            </ng-container>
+                        <%_ } _%>
+                        <%_ } _%>
+                        </nz-form-explain>
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
+        <%_ } _%>
+        </nz-row>
+    </ng-template>
+</form>
