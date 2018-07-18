@@ -23,7 +23,7 @@
                 <a [routerLink]="['/']">...</a>
             </nz-breadcrumb-item>
             <nz-breadcrumb-item>
-                <a [routerLink]="['<%= entityUrl %>']"><%= entityClassHumanized %></a>
+                <a [routerLink]="['/<%= entityFileName %>']"><%= entityClassHumanized %></a>
             </nz-breadcrumb-item>
             <nz-breadcrumb-item>
                 Edit
@@ -32,5 +32,5 @@
     </ng-template>
 </page-header>
 <div class="page-content">
-    <<%= jhiPrefixDashed %>-<%= entityFileName %>-form [mode]="'cardView'"></<%= jhiPrefixDashed %>-<%= entityFileName %>-form>
+    <<%= jhiPrefixDashed %>-<%= entityFileName %>-form [mode]="'cardForm'"></<%= jhiPrefixDashed %>-<%= entityFileName %>-form>
 </div>

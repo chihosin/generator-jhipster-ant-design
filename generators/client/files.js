@@ -8,6 +8,7 @@ const files = {
             templates: [
                 'shared/constants/menu.constants.ts',
                 'layouts/search/search.component.ts',
+                'shared/constants/pattern.constants.ts',
                 {
                     file: 'layouts/search/search.component.html',
                     method: 'processHtml'

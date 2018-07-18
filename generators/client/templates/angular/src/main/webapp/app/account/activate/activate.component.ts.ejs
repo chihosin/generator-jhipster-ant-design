@@ -17,7 +17,7 @@
  limitations under the License.
 -%>
 import { Component, OnInit } from '@angular/core';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NzModalRef } from 'ng-zorro-antd/src/modal/nz-modal-ref.class';
 import { ActivatedRoute } from '@angular/router';
 
 import { LoginModalService } from 'app/core';
@@ -30,7 +30,7 @@ import { ActivateService } from './activate.service';
 export class ActivateComponent implements OnInit {
     error: string;
     success: string;
-    modalRef: NgbModalRef;
+    modalRef: NzModalRef;
 
     constructor(
         private activateService: ActivateService,

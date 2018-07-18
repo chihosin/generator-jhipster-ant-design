@@ -23,10 +23,10 @@ import { JhiDataUtils } from 'ng-jhipster';
 <%_ } _%>
 import {
 I<%= entityAngularName %>,
-<%_ const textsImportAlreadyDeclared = [];
+<%_ const textImportAlreadyDeclared = [];
 fields.forEach(field => {
-if (field.fieldIsEnum && !textsImportAlreadyDeclared.includes(field.fieldType)) {
-    textsImportAlreadyDeclared.push(field.fieldType); _%>
+if (field.fieldIsEnum && !textImportAlreadyDeclared.includes(field.fieldType)) {
+    textImportAlreadyDeclared.push(field.fieldType); _%>
 <%= field.fieldType %>Text,
 <%_ }
 }); _%>
@@ -40,10 +40,10 @@ templateUrl: './<%= entityFileName %>-view.component.html',
 export class <%= entityAngularName %>ViewComponent implements OnInit {
     @Input() mode = 'basicView';
     @Input() <%= entityInstance %>: I<%= entityAngularName %>;
-    <%_ const textsAlreadyDeclared = [];
+    <%_ const textVarAlreadyDeclared = [];
     fields.forEach(field => {
-        if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
-            textsAlreadyDeclared.push(field.fieldType); _%>
+        if (field.fieldIsEnum && !textVarAlreadyDeclared.includes(field.fieldType)) {
+            textVarAlreadyDeclared.push(field.fieldType); _%>
     <%= field.fieldName %>Text = <%= field.fieldType %>Text;
     <%_ }
     }); _%>

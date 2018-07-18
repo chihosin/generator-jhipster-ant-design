@@ -100,4 +100,8 @@ export class LoginService {
         this.principal.authenticate(null);
         <%_ } _%>
     }
+
+    getVerifyCode(phoneNumber: string) {
+        return this.authServerProvider.getVerifyCode(phoneNumber);
+    }
 }

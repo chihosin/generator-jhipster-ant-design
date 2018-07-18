@@ -18,7 +18,7 @@
 -%>
 import { Component, OnInit } from '@angular/core';
 <%_ if (authenticationType !== 'oauth2') { _%>
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NzModalRef } from "ng-zorro-antd/src/modal/nz-modal-ref.class";
 <%_ } _%>
 import { JhiEventManager } from 'ng-jhipster';
 
@@ -39,7 +39,7 @@ import { <% if (authenticationType !== 'oauth2') { %>LoginModalService<% } else 
 export class HomeComponent implements OnInit {
     account: Account;
     <%_ if (authenticationType !== 'oauth2') { _%>
-    modalRef: NgbModalRef;
+    modalRef: NzModalRef;
     <%_ } _%>
 
     constructor(

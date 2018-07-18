@@ -17,28 +17,46 @@
  limitations under the License.
 -%>
 import { Injectable } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { <%=jhiPrefixCapitalized%>LoginModalComponent } from 'app/shared/login/login.component';
+import {NzModalService} from "ng-zorro-antd";
+import {NzModalRef} from "ng-zorro-antd/src/modal/nz-modal-ref.class";
 
 @Injectable({providedIn: 'root'})
 export class LoginModalService {
-    private isOpen = false;
-    constructor(
-        private modalService: NgbModal,
-    ) {}
+    private modals: Map<string, NzModalRef>;
 
-    open(): NgbModalRef {
-        if (this.isOpen) {
-            return;
-        }
-        this.isOpen = true;
-        const modalRef = this.modalService.open(<%=jhiPrefixCapitalized%>LoginModalComponent);
-        modalRef.result.then((result) => {
-            this.isOpen = false;
-        }, (reason) => {
-            this.isOpen = false;
+    constructor(private modalService: NzModalService) {
+        this.modals = new Map<string, NzModalRef>();
+    }
+
+    closeModal(modalId: string) {
+        this.modals.get(modalId).close();
+        this.modals.delete(modalId);
+    }
+
+    open(afterOpen?: Function, afterClose?: Function): NzModalRef {
+        const modalId = String(Math.random() * 100);
+
+        const modalRef = this.modalService.create({
+            nzTitle: '登录',
+            nzContent: BigbugLoginModalComponent,
+            nzWidth: '450px',
+            nzFooter: null,
+            nzComponentParams: {
+                parentModalId: modalId,
+                parentModalService: this
+            }
         });
+        this.modals.set(modalId, modalRef);
+
+        if (afterOpen) {
+            modalRef.afterOpen.subscribe(() => afterOpen());
+        }
+        if (afterClose) {
+            modalRef.afterClose.subscribe(() => afterClose());
+        }
+        
         return modalRef;
     }
 }

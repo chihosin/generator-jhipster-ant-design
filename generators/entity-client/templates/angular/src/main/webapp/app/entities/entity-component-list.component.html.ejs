@@ -69,7 +69,7 @@
             <i class="anticon anticon-plus"></i>
             <span>新建</span>
         </button>
-        <button *ngIf="!modal" nz-button [nzType]="'primary'" [routerLink]="['/admin/<%= entityInstance %>/new']">
+        <button *ngIf="!modal" nz-button [nzType]="'primary'" [routerLink]="['/<%= entityModelFileName %>/new']">
             <i class="anticon anticon-plus"></i>
             <span>新建</span>
         </button>
@@ -180,10 +180,10 @@
                 <%_ } _%>
                 <td>
                     <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                    <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'view']">查看</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
                     <nz-divider nzType="vertical"></nz-divider>
                     <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                    <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'edit']">编辑</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
                     <nz-divider nzType="vertical"></nz-divider>
                     <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
                     <nz-divider nzType="vertical"></nz-divider>
@@ -226,10 +226,10 @@
                     <nz-list-item [nzContent]="nzContent" [nzActions]="[edit, more]">
                         <ng-template #edit>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'view']">查看</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
                             <nz-divider nzType="vertical"></nz-divider>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'edit']">编辑</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
                             <nz-divider nzType="vertical"></nz-divider>
                             <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
                         </ng-template>
@@ -292,11 +292,11 @@
                              style="width: 100%">
                         <ng-template #show>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'view']">查看</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
                         </ng-template>
                         <ng-template #edit>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'edit']">编辑</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
                         </ng-template>
                         <ng-template #remove>
                             <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
@@ -342,11 +342,11 @@
                     <nz-list-item [nzContent]="nzContent" [nzExtra]="nzExtra" [nzActions]="[show,edit,remove,more]">
                         <ng-template #show>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'view']">查看</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
                         </ng-template>
                         <ng-template #edit>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'edit']">编辑</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
                         </ng-template>
                         <ng-template #remove>
                             <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
@@ -436,11 +436,11 @@
                     <nz-card nzHoverable [nzActions]="[show,edit,remove,more]">
                         <ng-template #show>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'view']">查看</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
                         </ng-template>
                         <ng-template #edit>
                             <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/admin/<%= entityInstance %>', item.id, 'edit']">编辑</a>
+                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
                         </ng-template>
                         <ng-template #remove>
                             <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>

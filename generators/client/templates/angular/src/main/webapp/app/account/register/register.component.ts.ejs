@@ -18,7 +18,7 @@
 -%>
 import { Component, OnInit, AfterViewInit, Renderer, ElementRef } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NzModalRef } from 'ng-zorro-antd/src/modal/nz-modal-ref.class';
 import { JhiLanguageService } from 'ng-jhipster';
 
 import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/shared';
@@ -38,7 +38,7 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     errorUserExists: string;
     registerAccount: any;
     success: boolean;
-    modalRef: NgbModalRef;
+    modalRef: NzModalRef;
 
     constructor(
         private languageService: JhiLanguageService,
