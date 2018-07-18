@@ -36,6 +36,7 @@
     selectedComparator: Function;
     selected: Array<I<%= entityAngularName %>>;
     batchDeleteConfirmModal: NzModalRef;
+    timer: NodeJS.Timer;
     <%_ const textsAlreadyDeclared = [];
     fields.forEach(field => {
         if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {

@@ -36,6 +36,7 @@ selectedIndeterminate: boolean;
 selectedComparator: Function;
 selected: Array<I<%= entityAngularName %>>;
 batchDeleteConfirmModal: NzModalRef;
+timer: NodeJS.Timer;
 <%_ const textsAlreadyDeclared = [];
 fields.forEach(field => {
     if (field.fieldIsEnum && !textsAlreadyDeclared.includes(field.fieldType)) {
@@ -80,10 +81,11 @@ constructor(
     };
 }
 
-loadAll(reset?): void {
+loadAll(reset?,loadMore?): void {
     if (reset) {
         this.pageIndex = 1;
     }
+    if(loadMore) this.pageIndex++;
     this.loading = true;
     <%_ if (searchEngine === 'elasticsearch') { _%>
     if (this.currentSearch) {
@@ -96,9 +98,13 @@ loadAll(reset?): void {
             })
             .subscribe(
                 (res: HttpResponse<I<%= entityAngularName %>[]>) => {
-                    this.<%= entityInstancePlural %> = res.body;
-                    this.totalItems = parseInt(res.headers.get('x-total-count'));
-                    this.loading = false;
+                    if(loadMore){
+
+                    }else{
+                        this.<%= entityInstancePlural %> = res.body;
+                        this.totalItems = parseInt(res.headers.get('x-total-count'));
+                        this.loading = false;
+                    }
                 },
                 (res: HttpErrorResponse) => this.onError(res.message)
             );
