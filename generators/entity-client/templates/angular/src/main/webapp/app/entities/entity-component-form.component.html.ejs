@@ -68,20 +68,53 @@
             const fieldType = fields[idx].fieldType;
             const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
             const fieldTitle = fields[idx].javadoc || fields[idx].fieldNameHumanized;
-            const fieldIsUnique = false;
-            for (idrx in fields[idx].fieldValidateRules) {
-                const rule = fields[idx].fieldValidateRules[idrx];
-                if (rule === 'unique') {
-                    const fieldIsUnique = true;
-                }
+            let fieldInputType = 'text';
+            let ngModelOption = '';
+            const translationKey = `${i18nKeyPrefix}.${fieldName}`;
+            if (['Integer', 'Long', 'Float', 'Double', 'BigDecimal'].includes(fieldType)) {
+                fieldInputType = 'number';
+            } else if (fieldType === 'LocalDate') {
+                fieldInputType = 'date';
+            } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) {
+                fieldInputType = 'datetime-local';
+            } else if (fieldType === 'Boolean') {
+                fieldInputType = 'checkbox';
+            } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') {
+                fieldInputType = 'hidden';
             }
             _%>
             <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
                 <nz-form-item>
-                    <nz-form-label [nzSpan]="null" nzRequired><%= fieldTitle %></nz-form-label>
-                    <nz-form-control [nzSpan]="null" nzHasFeedback>
-                        <input nz-input formControlName="<%= fieldName %>" placeholder="">
-                        <nz-form-explain *ngIf="validateForm.get('<%= fieldName %>').dirty && validateForm.get('<%= fieldName %>').errors<%_ if (fieldIsUnique) { _%> || validateForm.get('<%= fieldName %>').pending<%_ } _%>">
+                    <nz-form-label [nzSpan]="null" <% if (fields[idx].fieldValidate === true && fields[idx].fieldValidateRules.includes('required')) { %> nzRequired<% } %>><%= fieldTitle %></nz-form-label>
+                    <nz-form-control [nzSpan]="null" <% if (fields[idx].fieldValidate === true) { %> nzHasFeedback<% } %>>
+                        <%_ if (fields[idx].fieldType === 'String') { _%>
+                        <input nz-input formControlName="<%= fieldName %>" placeholder="" type="text"/>
+                        <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'text') { _%>
+                        <textarea nz-input formControlName="<%= fieldName %>" placeholder="" nzAutosize></textarea>
+                        <%_ } else if (['Integer', 'Long'].includes(fieldType)) { _%>
+                        <nz-input-number formControlName="<%= fieldName %>" [nzStep]="1"></nz-input-number>
+                        <%_ } else if (['Float', 'Double'].includes(fieldType)) { _%>
+                        <nz-input-number formControlName="<%= fieldName %>" [nzStep]="0.1"></nz-input-number>
+                        <%_ } else if (fieldType === 'BigDecimal') { _%>
+                        <nz-input-number formControlName="<%= fieldName %>" [nzStep]="0.01"></nz-input-number>
+                        <%_ } else if (fieldType === 'LocalDate') { _%>
+                        <nz-date-picker formControlName="<%= fieldName %>"></nz-date-picker>
+                        <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
+                        <nz-date-picker nzShowTime formControlName="<%= fieldName %>" placeholder=""></nz-date-picker>
+                        <%_ } else if (fieldType === 'Boolean') { _%>
+                        <input nz-input formControlName="<%= fieldName %>" type="checkbox"/>
+                        <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') { _%>
+                        <input nz-input formControlName="<%= fieldName %>" type="hidden"/>
+                        <%_ } else if (fields[idx].fieldIsEnum) { _%>
+                        <nz-select formControlName="<%= fieldName %>" placeholder="" <% if (fields[idx].fieldValidate === true && fields[idx].fieldValidateRules.includes('required')) { %> nzAllowClear<% } %>>
+                            <nz-option *ngFor="let value of <%= fieldName %>Text.filter;"
+                                        [nzLabel]="value.text"
+                                        [nzValue]="value.value">
+                            </nz-option>
+                        </nz-select>
+                        <%_ } _%>
+                        <%_ if (fields[idx].fieldValidate) { _%>
+                        <nz-form-explain *ngIf="validateForm.get('<%= fieldName %>').dirty && validateForm.get('<%= fieldName %>').errors<%_ if (fields[idx].fieldValidate === true && fields[idx].fieldValidateRules.includes('unique')) { _%>   || validateForm.get('<%= fieldName %>').pending<%_ } _%>">
                         <%_ for (idrx in fields[idx].fieldValidateRules) {
                             const rule = fields[idx].fieldValidateRules[idrx] _%>
                         <%_ if (rule === 'required') { _%>
@@ -118,10 +151,100 @@
                         <%_ } _%>
                         <%_ } _%>
                         </nz-form-explain>
+                        <%_ } _%>
                     </nz-form-control>
                 </nz-form-item>
             </nz-col>
         <%_ } _%>
         </nz-row>
+
+
+
+
+
+
+
+
+
+
+        <%_ for (idx in relationships) {
+                const relationshipType = relationships[idx].relationshipType;
+                const ownerSide = relationships[idx].ownerSide;
+                const otherEntityName = relationships[idx].otherEntityName;
+                const otherEntityNamePlural = relationships[idx].otherEntityNamePlural;
+                const otherEntityNameCapitalized = relationships[idx].otherEntityNameCapitalized;
+                const relationshipName = relationships[idx].relationshipName;
+                const relationshipNameHumanized = relationships[idx].relationshipNameHumanized;
+                const relationshipFieldName = relationships[idx].relationshipFieldName;
+                const relationshipFieldNamePlural = relationships[idx].relationshipFieldNamePlural;
+                const otherEntityField = relationships[idx].otherEntityField;
+                const otherEntityFieldCapitalized = relationships[idx].otherEntityFieldCapitalized;
+                const relationshipRequired = relationships[idx].relationshipRequired;
+                const translationKey = `${i18nKeyPrefix}.${relationshipName}`; _%>
+                <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true && otherEntityName === 'user')) { _%>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
+                    <%_ if (dto === 'no') { _%>
+                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>" <% if (relationshipRequired) { %> required<% } %>>
+                        <%_ if (!relationshipRequired) { _%>
+                        <option [ngValue]="null"></option>
+                        <%_ } else { _%>
+                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
+                        <%_ } _%>
+                        <option [ngValue]="<%=otherEntityName %>Option.id === <%= entityInstance %>.<%=relationshipFieldName %>?.id ? <%= entityInstance %>.<%=relationshipFieldName %> : <%=otherEntityName %>Option" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
+                    </select>
+                    <%_ } else { _%>
+                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>Id" <% if (relationshipRequired) { %> required<% } %>>
+                        <%_ if (!relationshipRequired) { _%>
+                        <option [ngValue]="null"></option>
+                        <%_ } else { _%>
+                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
+                        <%_ } _%>
+                        <option [ngValue]="<%=otherEntityName %>Option.id" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
+                    </select>
+                    <%_ } _%>
+                </div>
+                <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true) { _%>
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
+                    <%_ if (dto === 'no') { _%>
+                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"<% if (relationshipRequired) { %> required<% } %>>
+                        <%_ if (!relationshipRequired) { _%>
+                        <option [ngValue]="null"></option>
+                        <%_ } else { _%>
+                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
+                        <%_ } _%>
+                        <option [ngValue]="<%=otherEntityName %>Option.id === <%= entityInstance %>.<%=relationshipFieldName %>?.id ? <%= entityInstance %>.<%=relationshipFieldName %> : <%=otherEntityName %>Option" *ngFor="let <%=otherEntityName %>Option of <%=relationshipFieldNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
+                    </select>
+                    <%_ } else { _%>
+                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>Id"<% if (relationshipRequired) { %> required<% } %>>
+                        <%_ if (!relationshipRequired) { _%>
+                        <option [ngValue]="null"></option>
+                        <%_ } else { _%>
+                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
+                        <%_ } _%>
+                        <option [ngValue]="<%=otherEntityName %>Option.id" *ngFor="let <%=otherEntityName %>Option of <%=relationshipFieldNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
+                    </select>
+                    <%_ } _%>
+                </div>
+                <%_ } else if (relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { _%>
+                <div class="form-group">
+                    <label jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
+                    <select class="form-control" id="field_<%= relationshipName %>" multiple name="<%= relationshipName %>" [(ngModel)]="<%=entityInstance %>.<%=relationshipFieldNamePlural %>"<% if (relationshipRequired) { %> required<% } %>>
+                        <option [ngValue]="getSelected(<%=entityInstance %>.<%=relationshipFieldNamePlural %>, <%=otherEntityName %>Option)" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
+                    </select>
+                </div>
+                <%_ } _%>
+                <%_ if (relationships[idx].relationshipValidate === true) { _%>
+                <div [hidden]="!(editForm.controls.<%= relationshipName %>?.dirty && editForm.controls.<%= relationshipName %>?.invalid)">
+                    <%_ if (relationshipRequired) { _%>
+                    <small class="form-text text-danger"
+                        [hidden]="!editForm.controls.<%= relationshipName %>?.errors?.required" jhiTranslate="entity.validation.required">
+                        This field is required.
+                    </small>
+                    <%_ } _%>
+                </div>
+                <%_ } _%>
+                <%_ } _%>
     </ng-template>
 </form>

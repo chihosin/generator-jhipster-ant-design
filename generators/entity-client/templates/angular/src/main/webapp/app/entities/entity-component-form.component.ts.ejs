@@ -141,24 +141,29 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent; _%>
                 <%= fieldName %>: [
                     this.<%= entityInstance %>.<%= fieldName %>,
+                    [
                     <%_ for (idrx in fields[idx].fieldValidateRules) {
                         const rule = fields[idx].fieldValidateRules[idrx] _%>
                     <%_ if (rule === 'required') { _%>
-                    [Validators.required],
-                    <%_ } else if (rule === 'unique') { _%>
-                    [this.<%= fieldName %>AsyncValidator],
+                    Validators.required,
                     <%_ } else if (rule === 'minlength') { _%>
-                    [Validators.minLength(<%= fields[idx].fieldValidateRulesMinlength %>)],
+                    Validators.minLength(<%= fields[idx].fieldValidateRulesMinlength %>),
                     <%_ } else if (rule === 'maxlength') { _%>
-                    [Validators.maxLength(<%= fields[idx].fieldValidateRulesMaxlength %>)],
+                    Validators.maxLength(<%= fields[idx].fieldValidateRulesMaxlength %>),
                     <%_ } else if (rule === 'min') { _%>
-                    [Validators.min(<%= fields[idx].fieldValidateRulesMin %>)],
+                    Validators.min(<%= fields[idx].fieldValidateRulesMin %>),
                     <%_ } else if (rule === 'max') { _%>
-                    [Validators.max(<%= fields[idx].fieldValidateRulesMax %>)],
+                    Validators.max(<%= fields[idx].fieldValidateRulesMax %>),
                     <%_ } else if (rule === 'pattern') { _%>
-                    [Validators.pattern('<%= fields[idx].fieldValidateRulesPattern %>')],
+                    Validators.pattern('<%= fields[idx].fieldValidateRulesPattern %>'),
                     <%_ } _%>
                     <%_ } _%>
+                    ],
+                    [
+                    <%_ if (fields[idx].fieldValidate && fields[idx].fieldValidateRules.includes('unique')) { _%>
+                        this.<%= fieldName %>AsyncValidator,
+                    <%_ } _%>
+                    ]
                 ],
                 <%_ } _%>
             });

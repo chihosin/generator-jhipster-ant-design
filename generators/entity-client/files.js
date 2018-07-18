@@ -175,9 +175,7 @@ function customAddEntityToMenu(routerName, enableTranslation, clientFramework, e
             utils.rewriteFile({
                 file: entityMenuPath,
                 needle: 'jhipster-needle-add-entity-to-menu',
-                splicable: [
-                    `,{ title: '${_.startCase(routerName)}', link: '${routerName}', hasAnyAuthority: ['ROLE_USER'] }`
-                ]
+                splicable: [`{ title: '${_.startCase(routerName)}', link: '${routerName}', hasAnyAuthority: ['ROLE_USER'] },`]
             }, this);
         }
     } catch (e) {
