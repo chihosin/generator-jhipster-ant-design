@@ -30,10 +30,10 @@
                            [class.anticon-menu-unfold]="isCollapsed"
                            (click)="isCollapsed=!isCollapsed"></i>
                     </div>
-                    <<%= jhiPrefix %>-search class="search-box"></<%= jhiPrefix %>-search>
+                    <search class="search-box"></search>
                     <ul class="top-nav">
                         <li>
-                            <<%= jhiPrefix %>-header-notify></<%= jhiPrefix %>-header-notify>
+                            <notify></notify>
                         </li>
                         <li class="user-info">
                             <nz-dropdown nzplacement="bottomRight">
@@ -72,6 +72,14 @@
     <div class="container-box">
         <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate" [nzBreakpoint]="'lg'">
             <ul class="scrollable-main-sider" nz-menu [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+                <li nz-menu-item
+                    routerLink="/"
+                    [routerLinkActiveOptions]="{exact: true}"
+                    routerLinkActive="ant-menu-item-selected"
+                >
+                    <i class="anticon anticon-home"></i>
+                    <span class="nav-text">Home</span>
+                </li>
                 <ng-container *ngFor="let menuItem of mainMenu">
                     <li nz-submenu *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
                 <span title>

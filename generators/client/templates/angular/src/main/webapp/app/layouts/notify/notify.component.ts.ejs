@@ -7,7 +7,7 @@ import { NoticeItem, NoticeIconList } from '@delon/abc';
  * 菜单通知
  */
 @Component({
-    selector: '<%= jhiPrefixDashed %>-header-notify',
+    selector: 'notify',
     template: `
     <notice-icon
         [data]="data"
@@ -18,7 +18,7 @@ import { NoticeItem, NoticeIconList } from '@delon/abc';
         (popoverVisibleChange)="loadData()"></notice-icon>
     `
 })
-export class <%=jhiPrefixCapitalized%>HeaderNotifyComponent {
+export class NotifyComponent {
 
     data: NoticeItem[] = [
         { title: '通知', list: [], emptyText: '你已查看所有通知', emptyImage: 'https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg', clearText: '清空通知' },
