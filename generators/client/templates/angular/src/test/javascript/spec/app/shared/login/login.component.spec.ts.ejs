@@ -78,9 +78,6 @@ describe('Component Tests', () => {
                         password: 'admin',
                         rememberMe: true
                     };
-                    comp.username = 'admin';
-                    comp.password = 'admin';
-                    comp.rememberMe = true;
                     comp.credentials = credentials;
                     mockLoginService.setResponse({});
                     mockStateStorageService.setResponse({redirect: 'dummy'});
@@ -91,7 +88,6 @@ describe('Component Tests', () => {
 
                     // THEN
                     expect(comp.authenticationError).toEqual(false);
-                    expect(mockActiveModal.dismissSpy).toHaveBeenCalledWith('login success');
                     expect(mockEventManager.broadcastSpy).toHaveBeenCalledTimes(1);
                     expect(mockLoginService.loginSpy).toHaveBeenCalledWith(credentials);
                     expect(mockStateStorageService.getUrlSpy).toHaveBeenCalledTimes(1);
@@ -110,9 +106,6 @@ describe('Component Tests', () => {
                         password: 'admin',
                         rememberMe: true
                     };
-                    comp.username = 'admin';
-                    comp.password = 'admin';
-                    comp.rememberMe = true;
                     comp.credentials = credentials;
                     mockLoginService.setResponse({});
                     mockStateStorageService.setResponse(null);
@@ -123,7 +116,6 @@ describe('Component Tests', () => {
 
                     // THEN
                     expect(comp.authenticationError).toEqual(false);
-                    expect(mockActiveModal.dismissSpy).toHaveBeenCalledWith('login success');
                     expect(mockEventManager.broadcastSpy).toHaveBeenCalledTimes(1);
                     expect(mockLoginService.loginSpy).toHaveBeenCalledWith(credentials);
                     expect(mockStateStorageService.getUrlSpy).toHaveBeenCalledTimes(1);
@@ -150,12 +142,10 @@ describe('Component Tests', () => {
             comp.credentials = credentials;
 
             // WHEN
-            comp.cancel();
 
             // THEN
             expect(comp.authenticationError).toEqual(false);
             expect(comp.credentials).toEqual(expected);
-            expect(mockActiveModal.dismissSpy).toHaveBeenCalledWith('cancel');
         });
 
         it('should redirect user when register', () => {
@@ -163,7 +153,6 @@ describe('Component Tests', () => {
             comp.register();
 
             // THEN
-            expect(mockActiveModal.dismissSpy).toHaveBeenCalledWith('to state register');
             expect(mockRouter.navigateSpy).toHaveBeenCalledWith(['/register']);
         });
 
@@ -172,7 +161,6 @@ describe('Component Tests', () => {
             comp.requestResetPassword();
 
             // THEN
-            expect(mockActiveModal.dismissSpy).toHaveBeenCalledWith('to state requestReset');
             expect(mockRouter.navigateSpy).toHaveBeenCalledWith(['/reset', 'request']);
         });
     });

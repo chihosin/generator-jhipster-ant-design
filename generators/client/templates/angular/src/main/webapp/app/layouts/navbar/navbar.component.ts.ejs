@@ -19,7 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 <%_ if (authenticationType !== 'oauth2') { _%>
-import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NzModalRef } from 'ng-zorro-antd/src/modal/nz-modal-ref.class';
 <%_ } _%>
 import { JhiLanguageService } from 'ng-jhipster';
 
@@ -44,7 +44,7 @@ export class NavbarComponent implements OnInit {
     languages: any[];
     swaggerEnabled: boolean;
     <%_ if (authenticationType !== 'oauth2') { _%>
-    modalRef: NgbModalRef;
+    modalRef: NzModalRef;
     <%_ } _%>
     version: string;
 
