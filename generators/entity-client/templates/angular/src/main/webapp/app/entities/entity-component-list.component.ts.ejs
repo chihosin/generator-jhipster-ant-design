@@ -39,6 +39,7 @@ import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-m
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-list',
     templateUrl: './<%= entityFileName %>-list.component.html',
+    styleUrls: ['<%= entityFileName %>-list.component.scss'],
 })
 export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy {
     <%_ if (pagination === 'pagination' || pagination === 'pager') { _%>
