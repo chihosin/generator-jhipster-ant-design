@@ -130,6 +130,7 @@ sort() {
 <%_ if (searchEngine === 'elasticsearch') { _%>
 search() {
     const DEFAULT_QUERY = '*:*';
+    this.currentSearch = DEFAULT_QUERY;
     if (this.filters.id) {
         this.currentSearch += ` AND id:*${this.filters.id}*`;
     }
