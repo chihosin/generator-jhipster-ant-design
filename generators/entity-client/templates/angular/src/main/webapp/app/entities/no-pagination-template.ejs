@@ -127,6 +127,19 @@
             ];
         }
     }
+
+    updateSort(sort: { key: string; value: string }) {
+        if (sort.value == null) {
+            sort.key = 'id';
+            sort.value = 'ascend';
+        }
+        this.sorter = {
+            key: sort.key,
+            value: sort.value.replace('end', '')
+        };
+        this.sort();
+    }
+
     <%_ if (searchEngine === 'elasticsearch') { _%>
     search() {
         const DEFAULT_QUERY = '*:*';

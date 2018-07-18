@@ -54,18 +54,6 @@ export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy 
         this.search();
     }
 
-    updateSort(sort: { key: string; value: string }) {
-        if (sort.value == null) {
-            sort.key = 'id';
-            sort.value = 'ascend';
-        }
-        this.sorter = {
-            key: sort.key,
-            value: sort.value.replace('end', '')
-        };
-        this.sort();
-    }
-
     updateSelected(isSelected, item?: I<%= entityAngularName %>) {
         if (!item) {
             isSelected ? this.selected.push(...this.<%= entityInstancePlural %>) : (this.selected = []);

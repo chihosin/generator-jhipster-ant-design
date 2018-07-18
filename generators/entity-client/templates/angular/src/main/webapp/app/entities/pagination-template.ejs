@@ -89,13 +89,15 @@ loadAll(reset?): void {
     if (this.currentSearch) {
         this.<%= entityInstance %>Service
             .search({
-                query: this.currentSearch
+                query: this.currentSearch,
+                page : this.pageIndex - 1,
+                size : this.pageSize,
+                sort: this.sort(),
             })
             .subscribe(
                 (res: HttpResponse<I<%= entityAngularName %>[]>) => {
                     this.<%= entityInstancePlural %> = res.body;
-                    this.totalItems = this.<%= entityInstancePlural %>.length;
-                    this.sort();
+                    this.totalItems = parseInt(res.headers.get('x-total-count'));
                     this.loading = false;
                 },
                 (res: HttpErrorResponse) => this.onError(res.message)
@@ -103,11 +105,14 @@ loadAll(reset?): void {
         return;
     }
     <%_ } _%>
-    this.<%= entityInstance %>Service.query().subscribe(
+    this.<%= entityInstance %>Service.query({
+            page : this.pageIndex - 1,
+            size : this.pageSize,
+            sort: this.sort()
+        }).subscribe(
         (res: HttpResponse<I<%= entityAngularName %>[]>) => {
             this.<%= entityInstancePlural %> = res.body;
-            this.totalItems = this.<%= entityInstancePlural %>.length;
-            this.sort();
+            this.totalItems = parseInt(res.headers.get('x-total-count'))
             this.currentSearch = '';
             this.loading = false;
         },
@@ -116,17 +121,24 @@ loadAll(reset?): void {
 }
 
 sort() {
-    if (this.sorter) {
-        this.<%= entityInstancePlural %> = [
-            ...this.<%= entityInstancePlural %>.sort(
-                (a, b) =>
-                    this.sorter.value === 'asc'
-                        ? a[this.sorter.key] > b[this.sorter.key] ? 1 : -1
-                        : b[this.sorter.key] > a[this.sorter.key] ? 1 : -1
-            )
-        ];
+    if(this.sorter){
+        return [this.sorter.key + ',' + (this.sorter.value === 'desc' ? 'desc' : 'asc')];
     }
+    return null;
 }
+
+    updateSort(sort: { key: string; value: string }) {
+        if (sort.value == null) {
+            sort.key = 'id';
+            sort.value = 'ascend';
+        }
+        this.sorter = {
+            key: sort.key,
+            value: sort.value.replace('end', '')
+        };
+        this.loadAll();
+    }
+
 <%_ if (searchEngine === 'elasticsearch') { _%>
 search() {
     const DEFAULT_QUERY = '*:*';
