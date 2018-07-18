@@ -7,6 +7,24 @@ const files = {
             path: ANGULAR_DIR,
             templates: [
                 'shared/constants/menu.constants.ts',
+                'layouts/search/search.component.ts',
+                {
+                    file: 'layouts/search/search.component.html',
+                    method: 'processHtml'
+                },
+                {
+                    file: 'layouts/search/search.component.scss',
+                    method: 'processHtml'
+                },
+                'layouts/notify/notify.component.ts',
+                {
+                    file: 'layouts/main/main.component.scss',
+                    method: 'processHtml'
+                },
+                {
+                    file: 'admin/logs/logs.component.scss',
+                    method: 'processHtml'
+                }
             ]
         }
     ],
