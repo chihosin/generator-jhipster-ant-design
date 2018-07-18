@@ -17,40 +17,72 @@
  limitations under the License.
 -%>
 <<%= jhiPrefixDashed %>-page-ribbon></<%= jhiPrefixDashed %>-page-ribbon>
-<nz-layout class="main-layout">
-    <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate" [nzBreakpoint]="'lg'">
-        <div class="logo">
+<div class="wrapper">
+    <nz-header>
+        <div class="top-nav-wrap">
+            <div class="logo" [ngStyle]="{'width': isCollapsed ? '80px' : '200px' }" style="text-align: center; color: #fff;">
+                I'm logo
+            </div>
+            <nz-layout class="main">
+                <div>
+                    <div class="trigger">
+                        <i class="anticon" [class.anticon-menu-fold]="!isCollapsed"
+                           [class.anticon-menu-unfold]="isCollapsed"
+                           (click)="isCollapsed=!isCollapsed"></i>
+                    </div>
+                    <<%= jhiPrefix %>-search class="search-box"></<%= jhiPrefix %>-search>
+                    <ul class="top-nav">
+                        <li>
+                            <<%= jhiPrefix %>-header-notify></<%= jhiPrefix %>-header-notify>
+                        </li>
+                        <li class="user-info">
+                            <nz-dropdown nzplacement="bottomRight">
+                                <div nz-dropdown>
+                                    <nz-avatar nzIcon="anticon anticon-user"></nz-avatar>
+                                    <span class="top-nav-userinfo"> User <i class="anticon anticon-down"></i></span>
+                                </div>
+                                <ul nz-menu nzSelectable>
+                                    <li nz-menu-item>
+                                        <a>全屏</a>
+                                    </li>
+                                    <li nz-submenu>
+                                        <span title>语言</span>
+                                        <ul>
+                                            <li nz-menu-item>简体中文</li>
+                                            <li nz-menu-item>繁体中文</li>
+                                            <li nz-menu-item>英语</li>
+                                            <li nz-menu-item>法语</li>
+                                        </ul>
+                                    </li>
+                                    <li nz-menu-item>
+                                        <a>设置</a>
+                                    </li>
+                                    <li nz-menu-divider></li>
+                                    <li nz-menu-item>
+                                        <a>注销</a>
+                                    </li>
+                                </ul>
+                            </nz-dropdown>
+                        </li>
+                    </ul>
+                </div>
+            </nz-layout>
         </div>
-        <ul class="scrollable-main-sider" nz-menu [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
-            <li nz-menu-item
-                routerLink="/"
-                [routerLinkActiveOptions]="{exact: true}"
-                routerLinkActive="ant-menu-item-selected">
-                <i class="anticon anticon-home"></i>
-                <span class="nav-text">Home</span>
-            </li>
-            <ng-container *ngFor="let menuItem of mainMenu">
-                <ng-container *ngIf="!menuItem.subMenu">
-                    <li nz-menu-item
-                        *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority"
-                        routerLink="{{menuItem.link}}"
-                        [routerLinkActiveOptions]="{exact: true}"
-                        routerLinkActive="ant-menu-item-selected">
-                        <i class="anticon {{menuItem.iconClass}}"></i>
-                        <span class="nav-text">{{menuItem.title}}</span>
-                    </li>
-                </ng-container>
-                <ng-container *ngIf="menuItem.subMenu">
+    </nz-header>
+    <div class="container-box">
+        <nz-sider nzCollapsible [(nzCollapsed)]="isCollapsed" [nzTrigger]="triggerTemplate" [nzBreakpoint]="'lg'">
+            <ul class="scrollable-main-sider" nz-menu [nzMode]="'inline'" [nzInlineCollapsed]="isCollapsed">
+                <ng-container *ngFor="let menuItem of mainMenu">
                     <li nz-submenu *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
-                        <span title>
-                            <i class="anticon {{menuItem.iconClass}}"></i>
-                            <span class="nav-text">{{menuItem.title}}</span>
-                        </span>
+                <span title>
+                    <i class="anticon {{menuItem.iconClass}}"></i>
+                    <span class="nav-text">{{menuItem.title}}</span>
+                </span>
                         <ul>
                             <ng-container *ngFor="let subMenuItem of menuItem.subMenu">
-                                <ng-container *ngIf="!subMenuItem.subMenu">
-                                    <li nz-menu-item
-                                        *<%= jhiPrefix %>HasAnyAuthority="subMenuItem.hasAnyAuthority"
+                                <ng-container *ngIf="!subMenuItem.subMenu && subMenuItem.hasAnyAuthority">
+                                    <li *<%= jhiPrefix %>HasAnyAuthority="subMenuItem.hasAnyAuthority"
+                                        nz-menu-item
                                         routerLink="{{subMenuItem.link}}"
                                         routerLinkActive="ant-menu-item-selected">
                                         {{subMenuItem.title}}
@@ -59,7 +91,7 @@
                                 <ng-container *ngIf="subMenuItem.subMenu">
                                     <li nz-submenu
                                         *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
-                                        <span title class="pl-lg">{{subMenuItem.title}}</span>
+                                        <span title class="pl-lg">{{menuItem.title}}</span>
                                         <ul>
                                             <ng-container *ngFor="let leafMenuItem of subMenuItem.subMenu">
                                                 <li *<%= jhiPrefix %>HasAnyAuthority="leafMenuItem.hasAnyAuthority"
@@ -76,43 +108,16 @@
                         </ul>
                     </li>
                 </ng-container>
-            </ng-container>
-        </ul>
-    </nz-sider>
-    <nz-layout>
-        <nz-header>
-            <div class="top-nav-wrap">
-                <i class="anticon trigger" [class.anticon-menu-fold]="!isCollapsed"
-                   [class.anticon-menu-unfold]="isCollapsed"
-                   (click)="isCollapsed=!isCollapsed"></i>
-                <ul class="top-nav">
-                    <li>
-                        <nz-dropdown nzplacement="bottomRight">
-                            <a nz-dropdown>
-                                <nz-avatar nzIcon="anticon anticon-user"></nz-avatar>
-                                <span class="top-nav-userinfo"> User <i class="anticon anticon-down"></i></span>
-                            </a>
-                            <ul nz-menu nzSelectable>
-                                <li nz-menu-item>
-                                    <a>1st menu item</a>
-                                </li>
-                                <li nz-menu-item>
-                                    <a>2nd menu item</a>
-                                </li>
-                                <li nz-menu-item>
-                                    <a>3rd menu item</a>
-                                </li>
-                            </ul>
-                        </nz-dropdown>
-                    </li>
-                </ul>
+            </ul>
+        </nz-sider>
+        <nz-layout>
+            <div class="scrollable-main-content">
+                <nz-content>
+                    <router-outlet></router-outlet>
+                    <<%= jhiPrefix %>-footer></<%= jhiPrefix %>-footer>
+                </nz-content>
             </div>
-        </nz-header>
-        <div class="scrollable-main-content">
-            <nz-content>
-                <router-outlet></router-outlet>
-                <<%= jhiPrefixDashed %>-footer></<%= jhiPrefixDashed %>-footer>
-            </nz-content>
-        </div>
-    </nz-layout>
-</nz-layout>
+        </nz-layout>
+    </div>
+</div>
+
