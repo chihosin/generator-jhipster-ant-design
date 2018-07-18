@@ -25,13 +25,14 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CookieModule } from 'ngx-cookie';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgZorroAntdModule, NZ_MESSAGE_CONFIG } from 'ng-zorro-antd';
-import { AdDescListModule, AdPageHeaderModule } from '@delon/abc';
+import { AdDescListModule, AdPageHeaderModule, AdNoticeIconModule } from '@delon/abc';
 
 @NgModule({
     imports: [
         NgZorroAntdModule,
         AdPageHeaderModule.forRoot(),
         AdDescListModule.forRoot(),
+        AdNoticeIconModule.forRoot(),
         NgbModule.forRoot(),
         NgJhipsterModule.forRoot({
             // set below to true to make alerts look like toast
@@ -55,7 +56,8 @@ import { AdDescListModule, AdPageHeaderModule } from '@delon/abc';
         FontAwesomeModule,
         NgZorroAntdModule,
         AdPageHeaderModule,
-        AdDescListModule
+        AdDescListModule,
+        AdNoticeIconModule
     ]
 })
 export class <%=angularXAppName%>SharedLibsModule {}

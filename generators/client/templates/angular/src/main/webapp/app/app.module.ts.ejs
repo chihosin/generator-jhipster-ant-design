@@ -42,9 +42,6 @@ import { <%=angularXAppName%>EntityModule } from './entities/entity.module';
 <%_ if (['session', 'oauth2'].includes(authenticationType)) { _%>
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 <%_ } _%>
-import { DelonABCModule } from '@delon/abc/src/abc.module';
-import { <%=jhiPrefixCapitalized%>SearchComponent } from 'app/layouts/search/search.component';
-import { <%=jhiPrefixCapitalized%>HeaderNotifyComponent } from 'app/layouts/notify/notify.component';
 // jhipster-needle-angular-add-module-import JHipster will add new module here
 import {
     <%=jhiPrefixCapitalized%>MainComponent,
@@ -54,7 +51,9 @@ import {
     <%_ if (enableTranslation) { _%>
     ActiveMenuDirective,
     <%_ } _%>
-    ErrorComponent
+    ErrorComponent,
+    SearchComponent,
+    NotifyComponent
 } from './layouts';
 
 @NgModule({
@@ -70,7 +69,6 @@ import {
         <%=angularXAppName%>AccountModule,
         <%_ } _%>
         <%=angularXAppName%>EntityModule,
-        DelonABCModule,
         // jhipster-needle-angular-add-module JHipster will add new module here
     ],
     declarations: [
@@ -82,8 +80,8 @@ import {
         ActiveMenuDirective,
         <%_ } _%>
         FooterComponent,
-        <%=jhiPrefixCapitalized%>SearchComponent ,
-        <%=jhiPrefixCapitalized%>HeaderNotifyComponent
+        SearchComponent ,
+        NotifyComponent
     ],
     providers: [
         <%_ if (authenticationType === 'jwt') { _%>
