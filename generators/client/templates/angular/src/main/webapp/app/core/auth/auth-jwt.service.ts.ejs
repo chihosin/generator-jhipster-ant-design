@@ -100,4 +100,8 @@ export class AuthServerProvider {
         });
 <%_ } _%>
     }
+
+    getVerifyCode(phoneNumber: string) {
+        return this.http.post(SERVER_API_URL + 'api/authenticate/verify?phoneNumber=' + phoneNumber, null);
+    }
 }

@@ -26,6 +26,12 @@ const files = {
                     method: 'processHtml'
                 }
             ]
+        },
+        {
+            path: ANGULAR_DIR,
+            templates: [
+                'shared/constants/pattern.constants.ts',
+            ]
         }
     ],
 };
