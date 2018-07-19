@@ -180,9 +180,9 @@
                             <nz-select style="width: 100%;" name="<%= relationshipName %>"
                                 [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"
 
-                                (nzOpenChange)="loadMore<%= relationshipNameCapitalized %>s()" 
-                                (nzScrollToBottom)="loadMore<%= relationshipNameCapitalized %>s(true)" 
-                                (nzOnSearch)="loadMore<%= relationshipNameCapitalized %>s(false, $event)"
+                                (nzOpenChange)="loadMore<%= relationshipNameCapitalizedPlural %>()" 
+                                (nzScrollToBottom)="loadMore<%= relationshipNameCapitalizedPlural %>(true)" 
+                                (nzOnSearch)="loadMore<%= relationshipNameCapitalizedPlural %>(false, $event)"
 
                                 formControlName="<%=relationshipFieldName %>Id"
                                 nzAllowClear nzShowSearch nzServerSearch>
@@ -193,8 +193,22 @@
                                 <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
                                 </nz-option>
                             </nz-select>
-                    <%_ } else if (relationshipType === 'one-to-many' || (relationshipType === 'many-to-many' && relationships[idx].ownerSide === true)) { _%>
-                    // 这里放穿梭框
+                    <%_ } else if ((relationshipType === 'many-to-many' && relationships[idx].ownerSide === true)) { _%>
+                            <nz-transfer nzShowSearch
+                                    [nzDataSource]="<%= relationshipFieldNamePlural %>"
+                                    [nzOperations]="['to right', 'to left']"
+                                    [nzListStyle]="{'width.px': 250, 'height.px': 300}"
+                                    [nzFilterOption]="<%= otherEntityName %>FilterOption"
+                                    [nzRender]="render"
+                                    [nzFooter]="footer"
+                                    (nzChange)="change<%= relationshipNameCapitalizedPlural %>($event)">
+                                <ng-template #render let-item>
+                                    {{ item.id }}
+                                </ng-template>
+                                <ng-template #footer let-direction>
+                                    <a nz-button (click)="reload<%= relationshipNameCapitalizedPlural %>()" [nzSize]="'small'" style="float: right; margin: 5px;">reload</a>
+                                </ng-template>
+                            </nz-transfer>
                     <%_ } _%>
                     <%_ if (relationships[idx].relationshipValidate === true) { _%>
                             <nz-form-explain *ngIf="validateForm.get('<%=relationshipFieldName %>Id').dirty && validateForm.get('<%=relationshipFieldName %>Id').errors">
