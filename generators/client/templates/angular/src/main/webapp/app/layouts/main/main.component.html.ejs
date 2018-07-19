@@ -21,7 +21,8 @@
     <nz-header>
         <div class="top-nav-wrap">
             <div class="logo" [ngStyle]="{'width': isCollapsed ? '80px' : '200px' }" style="text-align: center; color: #fff;">
-                I'm logo
+                <span *ngIf="!isCollapsed">I'm logo</span>
+                <span *ngIf="isCollapsed">Logo</span>
             </div>
             <nz-layout class="main">
                 <div>

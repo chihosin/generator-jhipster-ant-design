@@ -31,12 +31,12 @@
 
 <div class="page-content">
     <nz-card class="page-card">
-        <input type="text" nz-input placeholder="搜索">
+        <input type="text" nz-input placeholder="搜索" [(ngModel)]="filter">
     </nz-card>
     <nz-card
         class="page-card"
         [nzTitle]="entry.prefix"
-        *ngFor="let entry of (configuration | pureFilter:filter:'prefix' | orderBy:orderProp:reverse)"
+        *ngFor="let entry of (configuration | pureFilter:filter:'prefix')"
     >
         <nz-table [nzShowSort]="false">
             <thead>
@@ -56,7 +56,7 @@
     <nz-card
         class="page-card"
         [nzTitle]="key"
-        *ngFor="let key of keys(allConfiguration)"
+        *ngFor="let key of (keys(allConfiguration) | pureFilter:filter)"
     >
         <nz-table [nzShowSort]="false">
             <thead>
