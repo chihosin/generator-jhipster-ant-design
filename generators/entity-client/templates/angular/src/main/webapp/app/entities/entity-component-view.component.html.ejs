@@ -47,7 +47,8 @@
     </ng-container>
 </ng-container>
 <ng-template #basicDescList>
-    <desc-list size="large" [title]="mode !== 'cardView' ? 'Basic' : null" class="mb-lg">
+    <nz-card *ngIf="!<%= entityInstance %>" [nzBordered]="false" nzLoading></nz-card>
+    <desc-list *ngIf="<%= entityInstance %>" size="large" [title]="mode !== 'cardView' ? 'Basic' : null" class="mb-lg">
     <%_ for (idx in fields) {
     const fieldName = fields[idx].fieldName;
     const fieldType = fields[idx].fieldType;
@@ -74,7 +75,8 @@
     </desc-list>
 </ng-template>
 <ng-template #relationshipDescList>
-<desc-list size="large" [title]="mode !== 'cardView' ? 'Relationship' : null" class="mb-lg">
+<nz-card *ngIf="!<%= entityInstance %>" [nzBordered]="false" nzLoading></nz-card>
+<desc-list *ngIf="<%= entityInstance %>" size="large" [title]="mode !== 'cardView' ? 'Relationship' : null" class="mb-lg">
     <%_ for (idx in relationships) {
     const relationshipType = relationships[idx].relationshipType;
     const ownerSide = relationships[idx].ownerSide;
