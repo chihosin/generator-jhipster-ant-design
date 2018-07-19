@@ -16,6 +16,49 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+<page-header [title]="'健康状态'">
+    <ng-template #breadcrumb>
+        <nz-breadcrumb>
+            <nz-breadcrumb-item>
+                <a [routerLink]="['/admin']">管理</a>
+            </nz-breadcrumb-item>
+            <nz-breadcrumb-item>
+                健康状态
+            </nz-breadcrumb-item>
+        </nz-breadcrumb>
+    </ng-template>
+</page-header>
+
+<div class="page-content">
+    <nz-card class="page-card">
+        <nz-table
+            #table
+            [nzShowPagination]="false"
+            [nzData]="healthData"
+        >
+            <thead>
+            <tr>
+                <th>服务名</th>
+                <th>状态</th>
+                <th>详细</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let health of table.data">
+                <td>{{health.name}}</td>
+                <td>
+                    <nz-tag [nzColor]="'green'" *ngIf="health.status === 'UP'">{{health.status}}</nz-tag>
+                    <nz-tag [nzColor]="'red'" *ngIf="health.status === 'UNKNOWN'">{{health.status}}</nz-tag>
+                </td>
+                <td>
+                    <a>查看</a>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+</div>
+
 <div>
     <h2>
         <span jhiTranslate="health.title">Health Checks</span>
