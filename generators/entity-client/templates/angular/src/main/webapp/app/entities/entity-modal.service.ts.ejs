@@ -17,7 +17,10 @@
  limitations under the License.
 -%>
 import { Injectable } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd';
+import { map } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 import { <%= entityAngularName %>ViewComponent } from 'app/entities/<%= entityModelFileName %>/components/<%= entityModelFileName %>-view.component';
 import { <%= entityAngularName %>FormComponent } from 'app/entities/<%= entityModelFileName %>/components/<%= entityModelFileName %>-form.component';
@@ -27,80 +30,58 @@ import { I<%= entityAngularName %>, <%= entityAngularName %> } from 'app/shared/
 @Injectable({providedIn: 'root'})
 export class <%= entityAngularName %>ModalService {
 
-    private modals: Map<string, NzModalRef>;
-
     constructor(
         private <%= entityInstance %>Service: <%= entityAngularName %>Service,
         private modalService: NzModalService
     ) {
-        this.modals = new Map<string, NzModalRef>();
     }
 
 
     createViewModal(id: number, afterOpen?: Function, afterClose?: Function) {
-        const createModal = (<%= entityInstance %>?: I<%= entityAngularName %>) => {
-            const modalId = String(Math.random() * 100);
-            const modal = this.modalService.create({
-                nzTitle: '<%= entityClassPlural %>',
-                nzFooter: null,
-                nzContent: <%= entityAngularName %>ViewComponent,
-                nzWidth: '800px',
-                nzBodyStyle: { padding: 0 },
-                nzComponentParams: {
-                    mode: 'tabView',
-                    <%= entityInstance %>,
-                    parentModalId: modalId,
-                    parentModalService: this
-                }
-            });
-            this.modals.set(modalId, modal);
-            if (afterOpen) {
-                modal.afterOpen.subscribe(() => afterOpen());
+        let modal;
+        const contentClose = () => modal.close();
+        modal = this.modalService.create({
+            nzTitle: '<%= entityClassPlural %>',
+            nzFooter: null,
+            nzContent: <%= entityAngularName %>ViewComponent,
+            nzWidth: '800px',
+            nzBodyStyle: {padding: 0},
+            nzComponentParams: {
+                mode: 'tabView',
+                contentResponse: this.<%= entityInstance %>Service.find(id).pipe(map((<%= entityInstance %>: HttpResponse<<%= entityAngularName %>>) => <%= entityInstance %>.body)),
+                contentClose
             }
-            if (afterClose) {
-                modal.afterClose.subscribe(() => afterClose());
-            }
-        };
-        this.<%= entityInstance %>Service.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
+        });
+        if (afterOpen) {
+            modal.afterOpen.subscribe(() => afterOpen());
+        }
+        if (afterClose) {
+            modal.afterClose.subscribe(() => afterClose());
+        }
+        return modal;
     }
 
     createEditModal(id?: number, afterOpen?: Function, afterClose?: Function) {
-        const createModal = (<%= entityInstance %>?: I<%= entityAngularName %>) => {
-            const modalId = String(Math.random() * 100);
-            const modal = this.modalService.create({
+            let modal;
+            const contentClose = () => modal.close();
+            modal = this.modalService.create({
                 nzTitle: '<%= entityClassPlural %>',
                 nzFooter: null,
                 nzContent: <%= entityAngularName %>FormComponent,
                 nzWidth: '800px',
-                nzBodyStyle: { padding: 0 },
+                nzBodyStyle: {padding: 0},
                 nzComponentParams: {
                     mode: 'tabForm',
-                    <%= entityInstance %>,
-                    parentModalId: modalId,
-                    parentModalService: this
+                    contentResponse: id ? this.<%= entityInstance %>Service.find(id).pipe(map((<%= entityInstance %>: HttpResponse<<%= entityAngularName %>>) => <%= entityInstance %>.body)) : of(new <%= entityAngularName %>()),
+                    contentClose
                 }
             });
-            this.modals.set(modalId, modal);
             if (afterOpen) {
                 modal.afterOpen.subscribe(() => afterOpen());
             }
             if (afterClose) {
                 modal.afterClose.subscribe(() => afterClose());
             }
-        };
-        if (id) {
-            this.<%= entityInstance %>Service.find(id).subscribe(<%= entityInstance %> => createModal(<%= entityInstance %>.body), error => this.createNotFoundModal());
-        } else {
-            createModal(new <%= entityAngularName %>());
-        }
-    }
-
-    closeModal(modalId: string) {
-        this.modals.get(modalId).close();
-        this.modals.delete(modalId);
-    }
-
-    private createNotFoundModal() {
-        this.modalService.error({ nzTitle: 'Oops!', nzContent: 'The item is not found' });
+            return modal;
     }
 }

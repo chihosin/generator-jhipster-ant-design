@@ -39,6 +39,8 @@ templateUrl: './<%= entityFileName %>-view.component.html',
 })
 export class <%= entityAngularName %>ViewComponent implements OnInit {
     @Input() mode = 'basicView';
+    @Input() contentResponse: any;
+    @Input() contentClose: Function;
     @Input() <%= entityInstance %>: I<%= entityAngularName %>;
     <%_ const textVarAlreadyDeclared = [];
     fields.forEach(field => {
@@ -56,7 +58,11 @@ export class <%= entityAngularName %>ViewComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        if (!this.<%= entityInstance %>) {
+        if (this.contentResponse) {
+            this.contentResponse.subscribe((<%= entityInstance %>) => {
+                this.<%= entityInstance %> = <%= entityInstance %>;
+            });
+        } else {
             this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
                 this.<%= entityInstance %> = <%= entityInstance %>;
             });
@@ -74,6 +80,10 @@ export class <%= entityAngularName %>ViewComponent implements OnInit {
     <%_ } _%>
     // noinspection JSMethodCanBeStatic
     previousState() {
-        window.history.back();
+        if (this.contentClose) {
+            this.contentClose();
+        } else {
+            window.history.back();
+        }
     }
 }
