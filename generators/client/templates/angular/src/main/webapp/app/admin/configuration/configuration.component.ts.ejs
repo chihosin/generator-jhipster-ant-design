@@ -16,13 +16,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { <%=jhiPrefixCapitalized%>ConfigurationService } from './configuration.service';
+import {<%=jhiPrefixCapitalized%>ConfigurationService} from './configuration.service';
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-configuration',
-    templateUrl: './configuration.component.html'
+    templateUrl: './configuration.component.html',
+    styles: ['nz-card { margin-bottom: 0 !important;}']
 })
 export class <%=jhiPrefixCapitalized%>ConfigurationComponent implements OnInit {
     allConfiguration: any = null;
@@ -31,22 +32,30 @@ export class <%=jhiPrefixCapitalized%>ConfigurationComponent implements OnInit {
     filter: string;
     orderProp: string;
     reverse: boolean;
+    showDetail: boolean;
+    detail: {
+        title: string;
+        content: string;
+    };
 
-    constructor(
-        private configurationService: <%=jhiPrefixCapitalized%>ConfigurationService
-    ) {
+    constructor(private configurationService: <%=jhiPrefixCapitalized%>ConfigurationService) {
         this.configKeys = [];
         this.filter = '';
         this.orderProp = 'prefix';
         this.reverse = false;
+        this.showDetail = false;
+        this.detail = {
+            title: '',
+            content: ''
+        };
     }
 
     keys(dict): Array<string> {
-        return (dict === undefined) ? [] : Object.keys(dict);
+        return dict == null ? [] : Object.keys(dict);
     }
 
     ngOnInit() {
-        this.configurationService.get().subscribe((configuration) => {
+        this.configurationService.get().subscribe(configuration => {
             this.configuration = configuration;
 
             for (const config of configuration) {
@@ -56,8 +65,80 @@ export class <%=jhiPrefixCapitalized%>ConfigurationComponent implements OnInit {
             }
         });
 
-        this.configurationService.getEnv().subscribe((configuration) => {
+        this.configurationService.getEnv().subscribe(configuration => {
             this.allConfiguration = configuration;
         });
+    }
+
+    dataToStringLimit(val: any) {
+        let str: string;
+        val = val || '';
+        if (typeof val === 'number' || typeof  val === 'string') {
+            str = val.toString();
+        } else {
+            str = JSON.stringify(val, null, 4);
+        }
+        if (str.length > 1024) {
+            str = str.substr(0, 1024) + '......';
+        }
+        return str;
+    }
+
+    openDetail(key: string, val: any) {
+        let str: string;
+        val = val || '';
+        if (typeof val === 'number' || typeof  val === 'string') {
+            str = val.toString();
+        } else {
+            str = JSON.stringify(val, null, 4);
+        }
+        this.detail = {
+            title: key,
+            content: this.formatJsonfunction(str)
+        };
+        this.showDetail = true;
+    }
+
+    private formatJsonfunction(json) {
+        let formatted = '',
+            padIdx = 0;
+        const PADDING = '    ';
+        /**
+         * 将对象转化为string
+         */
+        if (typeof json !== 'string') {
+            json = JSON.stringify(json);
+        }
+        /**
+         *利用正则类似将{'name':'ccy','age':18,'info':['address':'wuhan','interest':'playCards']}
+         *---> \r\n{\r\n'name':'ccy',\r\n'age':18,\r\n
+         *'info':\r\n[\r\n'address':'wuhan',\r\n'interest':'playCards'\r\n]\r\n}\r\n
+         */
+        json = json.replace(/([\{\}])/g, '\r\n$1\r\n')
+            .replace(/([\[\]])/g, '\r\n$1\r\n')
+            .replace(/(\,)/g, '$1\r\n')
+            .replace(/(\r\n\r\n)/g, '\r\n')
+            .replace(/\r\n\,/g, ',');
+        /**
+         * 根据split生成数据进行遍历，一行行判断是否增减PADDING
+         */
+        (json.split('\r\n')).forEach(function(node, index) {
+            let indent = 0,
+                padding = '';
+            if (node.match(/\{$/) || node.match(/\[$/)) {
+                indent = 1;
+            } else if (node.match(/\}/) || node.match(/\]/)) {
+                padIdx = padIdx !== 0 ? --padIdx : padIdx;
+            } else {
+                indent = 0;
+            }
+            for (let i = 0; i < padIdx; i++) {
+                padding += PADDING;
+            }
+            formatted += padding + node + '\r\n';
+            padIdx += indent;
+            console.log('index:' + index + ',indent:' + indent + ',padIdx:' + padIdx + ',node-->' + node);
+        });
+        return formatted.replace(/\n(\n)*( )*(\n)*\n/g, '');
     }
 }

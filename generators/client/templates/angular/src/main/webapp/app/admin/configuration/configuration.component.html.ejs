@@ -16,49 +16,120 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
-<div *ngIf="allConfiguration && configuration">
-    <h2 jhiTranslate="configuration.title">Configuration</h2>
+<page-header [title]="'环境变量'">
+    <ng-template #breadcrumb>
+        <nz-breadcrumb>
+            <nz-breadcrumb-item>
+                <a [routerLink]="['/admin']">管理</a>
+            </nz-breadcrumb-item>
+            <nz-breadcrumb-item>
+                环境变量
+            </nz-breadcrumb-item>
+        </nz-breadcrumb>
+    </ng-template>
+</page-header>
 
-    <span jhiTranslate="configuration.filter">Filter (by prefix)</span> <input type="text" [(ngModel)]="filter" class="form-control">
-    <h3>Spring configuration</h3>
-    <table class="table table-striped table-bordered table-responsive d-table">
-        <thead>
-        <tr>
-            <th class="w-40" (click)="orderProp = 'prefix'; reverse=!reverse"><span jhiTranslate="configuration.table.prefix">Prefix</span></th>
-            <th class="w-60" (click)="orderProp = 'properties'; reverse=!reverse"><span jhiTranslate="configuration.table.properties">Properties</span></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let entry of (configuration | pureFilter:filter:'prefix' | orderBy:orderProp:reverse)">
-            <td><span>{{entry.prefix}}</span></td>
-            <td>
-                <div class="row" *ngFor="let key of keys(entry.properties)">
-                    <div class="col-md-4">{{key}}</div>
-                    <div class="col-md-8">
-                        <span class="float-right badge-secondary break">{{entry.properties[key] | json}}</span>
-                    </div>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div *ngFor="let key of keys(allConfiguration)">
-        <h4><span>{{key}}</span></h4>
-        <table class="table table-sm table-striped table-bordered table-responsive d-table">
+<div class="page-content">
+    <nz-card class="page-card">
+        <input type="text" nz-input placeholder="搜索">
+    </nz-card>
+    <nz-card
+        class="page-card"
+        [nzTitle]="entry.prefix"
+        *ngFor="let entry of (configuration | pureFilter:filter:'prefix' | orderBy:orderProp:reverse)"
+    >
+        <nz-table [nzShowSort]="false">
             <thead>
             <tr>
-                <th class="w-40">Property</th>
-                <th class="w-60">Value</th>
+                <th [nzWidth]="'280px'">key</th>
+                <th>val</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let key of keys(entry.properties)" (click)="openDetail(key, entry.properties[key])">
+                <td>{{key}}</td>
+                <td>{{dataToStringLimit(entry.properties[key])}}</td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </nz-card>
+    <nz-card
+        class="page-card"
+        [nzTitle]="key"
+        *ngFor="let key of keys(allConfiguration)"
+    >
+        <nz-table [nzShowSort]="false">
+            <thead>
+            <tr>
+                <th [nzWidth]="'280px'">key</th>
+                <th>val</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let item of allConfiguration[key]">
-                <td class="break">{{item.key}}</td>
-                <td class="break">
-                    <span class="float-right badge-secondary break">{{item.val}}</span>
-                </td>
+                <td>{{item.key}}</td>
+                <td>{{dataToStringLimit(item.val)}}</td>
             </tr>
             </tbody>
-        </table>
-    </div>
+        </nz-table>
+    </nz-card>
 </div>
+
+<nz-modal
+    *ngIf="showDetail"
+    [(nzVisible)]="showDetail"
+    [nzTitle]="detail.title"
+    [nzWidth]="'756px'"
+    (nzOnCancel)="showDetail = false"
+    [nzStyle]="{ top: '28px' }"
+>
+    <textarea nz-input rows="30" [ngModel]="detail.content"></textarea>
+</nz-modal>
+
+<!--<div *ngIf="allConfiguration && configuration">-->
+    <!--<h2>Configuration</h2>-->
+
+    <!--<span>Filter (by prefix)</span> <input type="text" [(ngModel)]="filter" class="form-control">-->
+    <!--<h3>Spring configuration</h3>-->
+    <!--<table class="table table-striped table-bordered table-responsive d-table">-->
+        <!--<thead>-->
+        <!--<tr>-->
+            <!--<th class="w-40" (click)="orderProp = 'prefix'; reverse=!reverse"><span>Prefix</span></th>-->
+            <!--<th class="w-60" (click)="orderProp = 'properties'; reverse=!reverse"><span>Properties</span></th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr *ngFor="let entry of (configuration | pureFilter:filter:'prefix' | orderBy:orderProp:reverse)">-->
+            <!--<td><span>{{entry.prefix}}</span></td>-->
+            <!--<td>-->
+                <!--<div class="row" *ngFor="let key of keys(entry.properties)">-->
+                    <!--<div class="col-md-4">{{key}}</div>-->
+                    <!--<div class="col-md-8">-->
+                        <!--<span class="float-right badge-secondary break">{{entry.properties[key] | json}}</span>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+    <!--</table>-->
+    <!--<div *ngFor="let key of keys(allConfiguration)">-->
+        <!--<h4><span>{{key}}</span></h4>-->
+        <!--<table class="table table-sm table-striped table-bordered table-responsive d-table">-->
+            <!--<thead>-->
+            <!--<tr>-->
+                <!--<th class="w-40">Property</th>-->
+                <!--<th class="w-60">Value</th>-->
+            <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody>-->
+            <!--<tr *ngFor="let item of allConfiguration[key]">-->
+                <!--<td class="break">{{item.key}}</td>-->
+                <!--<td class="break">-->
+                    <!--<span class="float-right badge-secondary break">{{item.val}}</span>-->
+                <!--</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+    <!--</div>-->
+<!--</div>-->
+

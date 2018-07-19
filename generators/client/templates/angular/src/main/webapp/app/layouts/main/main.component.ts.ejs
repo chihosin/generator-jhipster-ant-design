@@ -24,10 +24,11 @@ import { JhiLanguageHelper } from 'app/core';
 <%_ } else { _%>
 import { Title } from '@angular/platform-browser';
 <%_ } _%>
-import { NzMessageService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { Subscription } from 'rxjs/index';
 import { JhiEventManager } from 'ng-jhipster';
 import { MAIN_MENU } from 'app/shared';
+import { LoginService } from 'app/core/login/login.service';
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-main',
@@ -48,11 +49,13 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
         private titleService: Title,
         <%_ } _%>
         private messageService: NzMessageService,
+        private loginService: LoginService,
+        private modalService: NzModalService,
         private eventManager: JhiEventManager,
         private router: Router
     ) {
         this.alerts = [];
-        this.cleanHttpErrorListener = eventManager.subscribe('bigbugApp.httpError', response => {
+        this.cleanHttpErrorListener = eventManager.subscribe('<%= jhiPrefixDashed %>App.httpError', response => {
             let i;
             const httpErrorResponse = response.content;
             switch (httpErrorResponse.status) {
@@ -138,5 +141,16 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
             this.eventManager.destroy(this.cleanHttpErrorListener);
             this.alerts = [];
         }
+    }
+
+    logout() {
+        this.modalService.confirm({
+            nzTitle  : '注销登录',
+            nzContent: '确定要退出吗？',
+            nzOnOk   : () => {
+                this.loginService.logout();
+                this.router.navigateByUrl('');
+            }
+        });
     }
 }
