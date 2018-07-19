@@ -78,8 +78,18 @@
             </nz-list-item>
         </ng-template>
         <ng-template #pagination>
-            <nz-pagination [nzTotal]="<%= entityInstancePlural %>.length" [nzPageSize]="10"
-                           (nzPageIndexChange)="loadAll(true)"></nz-pagination>
+            <nz-pagination
+                [(nzPageSize)]="pageSize"
+                [(nzPageIndex)]="pageIndex"
+                <%_ if (pagination === 'pagination' || pagination === 'pager') { _%>
+                [(nzTotal)]="totalItems"
+                (nzPageIndexChange)="loadAll()"
+                <%_ } else { _%>
+                [nzTotal]="<%= entityInstancePlural %>.length"
+                (nzPageIndexChange)="loadAll(true)"
+                <%_ } _%>
+            >
+            </nz-pagination>
         </ng-template>
     </nz-list>
 </nz-card>
