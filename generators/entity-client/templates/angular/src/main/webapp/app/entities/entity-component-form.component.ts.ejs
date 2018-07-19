@@ -86,7 +86,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     isSaving: boolean;
     <%_ let paging = false;
     Object.keys(differentRelationships).forEach(key => {
-        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
             paging = true;
         }
     });
@@ -183,7 +183,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 ],
                 <%_ } _%>
                 <%_ Object.keys(differentRelationships).forEach(key => {
-                    if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+                    if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
                         const uniqueRel = differentRelationships[key][0];
                         if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
                 <%= uniqueRel.relationshipFieldName %>Id: [this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id, 
@@ -365,7 +365,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%_ } _%>
 
     <%_ Object.keys(differentRelationships).forEach(key => {
-        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
             const uniqueRel = differentRelationships[key][0];
             if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
 
