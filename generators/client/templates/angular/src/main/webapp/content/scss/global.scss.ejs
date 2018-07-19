@@ -53,43 +53,29 @@ body {
     .page-content {
         padding: 0 16px 16px 16px;
     }
+
+    nz-input-number, nz-date-picker, .ant-input-number {
+        width: 100%;
+    }
+    nz-picker {
+        width: 100%;
+        display: block;
+        > span {
+            width: 100%;
+        }
+    }
+    .ant-form-item-children {
+        width: 100%;
+        display: block;
+    }
 }
 
 /* ==========================================================================
 entity-list styles
 ========================================================================== */
+
 .entity-list {
     :global {
-        .ant-card {
-            width: 100%;
-        }
-        .ant-card-meta-content {
-            margin-top: 0;
-        }
-        // disabled white space
-        .ant-card-meta-avatar {
-            font-size: 0;
-        }
-        .ant-card-actions {
-            background: #f7f9fa;
-        }
-        .ant-list .ant-list-item-content-single {
-            max-width: 100%;
-        }
-        .ant-card-meta-title {
-            margin-bottom: 4px;
-        }
-        nz-list nz-card {
-            margin-bottom: 0 !important;
-        }
-        .card-item-content {
-            display: flex;
-            margin-top: 16px;
-            margin-bottom: -4px;
-            line-height: 20px;
-            height: 20px;
-            justify-content: space-between;
-        }
         .card-info {
             margin-top: 16px;
             margin-left: 40px;
@@ -119,23 +105,6 @@ entity-list styles
             line-height: 20px;
             margin-left: 2px;
         }
-        .ad-standard-form-row {
-            border-bottom: 1px dashed #e8e8e8;
-            padding-bottom: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            nz-form-item {
-                nz-form-label {
-                    padding-top: 6px;
-                }
-                nz-form-control {
-                    [nz-input] {
-                        width: 100%;
-                    }
-                }
-            }
-        }
         .block-description {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -148,18 +117,6 @@ entity-list styles
         .card-list-btn-block {
             width: 100%;
             height: 183px;
-        }
-
-        .mb-sm {
-            margin-bottom: 8px !important;
-        }
-
-        .mr-md {
-            margin-right: 16px !important;
-        }
-
-        .mb-lg {
-            margin-bottom: 24px !important;
         }
 
         .filter-form {
