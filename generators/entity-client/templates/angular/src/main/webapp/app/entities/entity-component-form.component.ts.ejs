@@ -72,6 +72,21 @@ import { <%= uniqueRel.otherEntityAngularName%>Service } from 'app/entities/<%= 
     }
 }); _%>
 
+<%_ 
+const relationShipToMany = [];
+const relationShipToOne = [];
+Object.keys(differentRelationships).forEach(key => {
+    const uniqueRel = differentRelationships[key][0];
+    if (uniqueRel.otherEntityAngularName !== entityAngularName) {
+        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
+            relationShipToOne.push(uniqueRel);
+        }else if(differentRelationships[key].some(rel => (rel.ownerSide && rel.relationshipType === 'many-to-many'))){
+            relationShipToMany.push(uniqueRel);
+        }
+    }
+});
+_%>
+
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-form',
     templateUrl: './<%= entityFileName %>-form.component.html'
@@ -84,13 +99,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     @Input() contentClose: Function;
     validateForm: FormGroup;
     isSaving: boolean;
-    <%_ let paging = false;
-    Object.keys(differentRelationships).forEach(key => {
-        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
-            paging = true;
-        }
-    });
-    if(paging){ _%>
+    <%_ if(relationShipToOne){ _%>
     parentPagingInfo = {
         page: 0,
         size: 10,
@@ -106,8 +115,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%= field.fieldName %>Text = <%= field.fieldType %>Text;
     <%_ }
     }); _%>
-    <%_ for ( const idx in variables ) { %>
-    <%- variables[idx] %>
+    <%_ for ( const idx in variables ) { 
+        const result = variables[idx].replace('[]', '[] = []'); _%>
+    <%- result %>
     <%_ } _%>
     <%_ for ( idx in fields ) {
         const fieldName = fields[idx].fieldName;
@@ -182,18 +192,13 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     ]
                 ],
                 <%_ } _%>
-                <%_ Object.keys(differentRelationships).forEach(key => {
-                    if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
-                        const uniqueRel = differentRelationships[key][0];
-                        if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
+                <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
                 <%= uniqueRel.relationshipFieldName %>Id: [this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id, 
-                <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
+                    <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
                     [Validators.required]
-                <%_ } _%> 
+                    <%_ } _%> 
                 ],
-                <%_     }
-                    }
-                }); _%>
+                <%_ }); _%>
             });
         };
         this.isSaving = false;
@@ -364,12 +369,34 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         <%_ } _%>
     <%_ } _%>
 
-    <%_ Object.keys(differentRelationships).forEach(key => {
-        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
-            const uniqueRel = differentRelationships[key][0];
-            if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
+    <%_ relationShipToMany.forEach(uniqueRel =>{ _%>
+    reload<%= uniqueRel.relationshipNameCapitalizedPlural %>(){
+        this.<%= uniqueRel.otherEntityName %>Service.search({
+            query: '*:*',
+            paged: false
+        }).subscribe(
+            (res: HttpResponse<I<%= uniqueRel.otherEntityAngularName %>[]>) => {
+                this.<%= uniqueRel.relationshipFieldNamePlural %> = res.body;
+            },
+            (res: HttpErrorResponse) => this.onError(res.message)
+        );
+    }
+    
+    <%= uniqueRel.otherEntityName %>FilterOption(inputValue: string, item: I<%= uniqueRel.otherEntityAngularName %>): boolean {
+        return item.id.toString().indexOf(inputValue)> -1;
+    }
 
-    loadMoreParents(holdData: boolean, value: any): void {
+    change<%= uniqueRel.relationshipNameCapitalizedPlural %>(ret: any){
+        if(ret.from === 'left'){
+            this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> ? this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.concat(ret.list): ret.list;
+        }else if(ret.from === 'right'){
+            this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.filter(d=>ret.list.some(chose=>chose.id !== d.id))
+        }
+    }
+    <%_ }); _%>
+    
+    <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
+    loadMore<%= relationshipNameCapitalizedPlural %>(holdData: boolean, value: any): void {
         if (!holdData) {
             this.parentPagingInfo.page = 0;
             this.parentPagingInfo.lockPaging = false;
@@ -404,9 +431,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 (res: HttpErrorResponse) => this.onError(res.message)
             );
     }
-    <%_     }
-        }
-    }); _%>
+    <%_ }); _%>
 
 }
 
