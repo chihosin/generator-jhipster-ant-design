@@ -84,6 +84,21 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     @Input() parentModalService: <%= entityAngularName %>ModalService;
     validateForm: FormGroup;
     isSaving: boolean;
+    <%_ let paging = false;
+    Object.keys(differentRelationships).forEach(key => {
+        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+            paging = true;
+        }
+    });
+    if(paging){ _%>
+    parentPagingInfo = {
+        page: 0,
+        size: 10,
+        lockPaging: false,
+        isLoading: false
+    }
+    <%_ } _%>
+
     <%_ const textVarAlreadyDeclared = [];
     fields.forEach(field => {
         if (field.fieldIsEnum && !textVarAlreadyDeclared.includes(field.fieldType)) {
@@ -112,6 +127,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         private messageService: NzMessageService,
         <%_ } _%>
         private <%= entityInstance %>Service: <%= entityAngularName %>Service,
+
         <%_ Object.keys(differentRelationships).forEach(key => {
             if (differentRelationships[key].some(rel => rel.relationshipType !== 'one-to-many')) {
                 const uniqueRel = differentRelationships[key][0];
@@ -166,6 +182,18 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     ]
                 ],
                 <%_ } _%>
+                <%_ Object.keys(differentRelationships).forEach(key => {
+                    if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+                        const uniqueRel = differentRelationships[key][0];
+                        if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
+                <%= uniqueRel.relationshipFieldName %>Id: [this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id, 
+                <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
+                    [Validators.required]
+                <%_ } _%> 
+                ],
+                <%_     }
+                    }
+                }); _%>
             });
         };
         this.isSaving = false;
@@ -332,5 +360,50 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         <%_ } _%>
         <%_ } _%>
     <%_ } _%>
+
+    <%_ Object.keys(differentRelationships).forEach(key => {
+        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || rel.relationshipType === 'one-to-one')) {
+            const uniqueRel = differentRelationships[key][0];
+            if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
+
+    loadMoreParents(holdData: boolean, value: any): void {
+        if (!holdData) {
+            this.parentPagingInfo.page = 0;
+            this.parentPagingInfo.lockPaging = false;
+        }
+        if (this.parentPagingInfo.lockPaging) {
+            return;
+        }
+        this.parentPagingInfo.isLoading = true;
+        
+        let queryStr = '*:*';
+        if (this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id) {
+            queryStr = `id:${this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id}`;
+        } else if (value) {
+            queryStr = `*:*${value}*`;
+        }
+
+        this.<%= uniqueRel.otherEntityName %>Service
+            .search({
+                query: queryStr,
+                page: this.parentPagingInfo.page,
+                size: this.parentPagingInfo.size
+            })
+            .subscribe(
+                (res: HttpResponse<I<%= uniqueRel.otherEntityAngularName %>[]>) => {
+                    this.<%= uniqueRel.otherEntityNamePlural.toLowerCase() %> = this.<%= uniqueRel.otherEntityNamePlural.toLowerCase() %> && holdData ? this.<%= uniqueRel.otherEntityNamePlural.toLowerCase() %>.concat(res.body) : res.body;
+                    res.body.length >= this.parentPagingInfo.size
+                        ? this.parentPagingInfo.page += 1
+                        : this.parentPagingInfo.lockPaging = true;
+
+                    this.parentPagingInfo.isLoading = false;
+                },
+                (res: HttpErrorResponse) => this.onError(res.message)
+            );
+    }
+    <%_     }
+        }
+    }); _%>
+
 }
 

@@ -155,19 +155,7 @@
                     </nz-form-control>
                 </nz-form-item>
             </nz-col>
-        <%_ } _%>
-        </nz-row>
-
-
-
-
-
-
-
-
-
-
-        <%_ for (idx in relationships) {
+            <%_ for (idx in relationships) {
                 const relationshipType = relationships[idx].relationshipType;
                 const ownerSide = relationships[idx].ownerSide;
                 const otherEntityName = relationships[idx].otherEntityName;
@@ -181,70 +169,42 @@
                 const otherEntityFieldCapitalized = relationships[idx].otherEntityFieldCapitalized;
                 const relationshipRequired = relationships[idx].relationshipRequired;
                 const translationKey = `${i18nKeyPrefix}.${relationshipName}`; _%>
-                <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true && otherEntityName === 'user')) { _%>
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
-                    <%_ if (dto === 'no') { _%>
-                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>" <% if (relationshipRequired) { %> required<% } %>>
-                        <%_ if (!relationshipRequired) { _%>
-                        <option [ngValue]="null"></option>
-                        <%_ } else { _%>
-                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
-                        <%_ } _%>
-                        <option [ngValue]="<%=otherEntityName %>Option.id === <%= entityInstance %>.<%=relationshipFieldName %>?.id ? <%= entityInstance %>.<%=relationshipFieldName %> : <%=otherEntityName %>Option" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
-                    </select>
-                    <%_ } else { _%>
-                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>Id" <% if (relationshipRequired) { %> required<% } %>>
-                        <%_ if (!relationshipRequired) { _%>
-                        <option [ngValue]="null"></option>
-                        <%_ } else { _%>
-                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
-                        <%_ } _%>
-                        <option [ngValue]="<%=otherEntityName %>Option.id" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
-                    </select>
-                    <%_ } _%>
-                </div>
-                <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true) { _%>
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
-                    <%_ if (dto === 'no') { _%>
-                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"<% if (relationshipRequired) { %> required<% } %>>
-                        <%_ if (!relationshipRequired) { _%>
-                        <option [ngValue]="null"></option>
-                        <%_ } else { _%>
-                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
-                        <%_ } _%>
-                        <option [ngValue]="<%=otherEntityName %>Option.id === <%= entityInstance %>.<%=relationshipFieldName %>?.id ? <%= entityInstance %>.<%=relationshipFieldName %> : <%=otherEntityName %>Option" *ngFor="let <%=otherEntityName %>Option of <%=relationshipFieldNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
-                    </select>
-                    <%_ } else { _%>
-                    <select class="form-control" id="field_<%= relationshipName %>" name="<%= relationshipName %>" [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>Id"<% if (relationshipRequired) { %> required<% } %>>
-                        <%_ if (!relationshipRequired) { _%>
-                        <option [ngValue]="null"></option>
-                        <%_ } else { _%>
-                        <option *ngIf="!editForm.value.<%= relationshipName %>" [ngValue]="null" selected></option>
-                        <%_ } _%>
-                        <option [ngValue]="<%=otherEntityName %>Option.id" *ngFor="let <%=otherEntityName %>Option of <%=relationshipFieldNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
-                    </select>
-                    <%_ } _%>
-                </div>
+            <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="null"  nzRequired><%= relationshipNameHumanized %></nz-form-label>
+                    <nz-form-control [nzSpan]="null"  nzHasFeedback>
+                <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
+                        <nz-select style="width: 100%;" name="<%= relationshipName %>"
+                            [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"
+                            (nzOpenChange)="loadMoreParents()" 
+                            (nzScrollToBottom)="loadMoreParents(true)" 
+                            (nzOnSearch)="loadMoreParents(false, $event)"
+                            formControlName="<%=relationshipFieldName %>Id"
+                            nzAllowClear nzShowSearch nzServerSearch>
+                            <nz-option *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>;" 
+                                [nzValue]="<%=otherEntityName %>Option.id" 
+                                [nzLabel]="<%=otherEntityName %>Option.id"></nz-option>
+                            <nz-option *ngIf="parentPagingInfo.isLoading" nzDisabled nzCustomContent>
+                            <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
+                            </nz-option>
+                        </nz-select>
                 <%_ } else if (relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { _%>
-                <div class="form-group">
-                    <label jhiTranslate="<%= translationKey %>" for="field_<%= relationshipName %>"><%= relationshipNameHumanized %></label>
-                    <select class="form-control" id="field_<%= relationshipName %>" multiple name="<%= relationshipName %>" [(ngModel)]="<%=entityInstance %>.<%=relationshipFieldNamePlural %>"<% if (relationshipRequired) { %> required<% } %>>
-                        <option [ngValue]="getSelected(<%=entityInstance %>.<%=relationshipFieldNamePlural %>, <%=otherEntityName %>Option)" *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>; trackBy: track<%=otherEntityNameCapitalized %>ById">{{<%=otherEntityName %>Option.<%=otherEntityField %>}}</option>
-                    </select>
-                </div>
+                // 这里放穿梭框
                 <%_ } _%>
                 <%_ if (relationships[idx].relationshipValidate === true) { _%>
-                <div [hidden]="!(editForm.controls.<%= relationshipName %>?.dirty && editForm.controls.<%= relationshipName %>?.invalid)">
+                        <nz-form-explain *ngIf="validateForm.get('<%=relationshipFieldName %>Id').dirty && validateForm.get('<%=relationshipFieldName %>Id').errors">
                     <%_ if (relationshipRequired) { _%>
-                    <small class="form-text text-danger"
-                        [hidden]="!editForm.controls.<%= relationshipName %>?.errors?.required" jhiTranslate="entity.validation.required">
-                        This field is required.
-                    </small>
+                            <ng-container *ngIf="validateForm.get('<%=relationshipFieldName %>Id').hasError('required')">
+                                请选择
+                            </ng-container>
                     <%_ } _%>
-                </div>
+                        </nz-form-explain>
                 <%_ } _%>
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
                 <%_ } _%>
+        <%_ } _%>
+        </nz-row>
     </ng-template>
 </form>
