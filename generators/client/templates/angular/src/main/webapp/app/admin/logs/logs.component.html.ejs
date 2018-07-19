@@ -30,6 +30,9 @@
 </page-header>
 <div class="page-content">
     <nz-card class="page-card">
+        <input type="text" nz-input placeholder="搜索" [(ngModel)]="filters.name" (ngModelChange)="search()">
+    </nz-card>
+    <nz-card class="page-card">
         <nz-table #table
                   [nzData]="loggers"
                   [nzShowTotal]="pageMessage"

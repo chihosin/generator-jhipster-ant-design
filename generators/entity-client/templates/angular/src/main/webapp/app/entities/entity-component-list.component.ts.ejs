@@ -39,7 +39,6 @@ import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-m
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-list',
     templateUrl: './<%= entityFileName %>-list.component.html',
-    styleUrls: ['<%= entityFileName %>-list.component.scss'],
 })
 export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy {
     <%_ if (pagination === 'pagination' || pagination === 'pager') { _%>
@@ -63,6 +62,16 @@ export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy 
         this.selected = Array.from(new Set(this.selected));
         this.selectedAll = this.selected.length >= this.totalItems;
         this.selectedIndeterminate = this.selected.length > 0 && !this.selectedAll;
+    }
+
+    changeData() {
+        if (this.timer) {
+            clearTimeout(this.timer);
+        }
+        this.timer = setTimeout(() => {
+        this.timer = null;
+        this.search();
+        }, 380);
     }
 
     delete(item: I<%= entityAngularName %>) {

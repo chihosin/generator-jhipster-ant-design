@@ -80,8 +80,8 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
 
     private _<%= entityInstance %>: I<%= entityAngularName %>;
     @Input() mode = 'cardForm';
-    @Input() parentModalId: string;
-    @Input() parentModalService: <%= entityAngularName %>ModalService;
+    @Input() contentResponse: any;
+    @Input() contentClose: Function;
     validateForm: FormGroup;
     isSaving: boolean;
     <%_ let paging = false;
@@ -197,13 +197,16 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             });
         };
         this.isSaving = false;
-        if (!this.parentModalId) {
-            this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
+        if (this.contentResponse) {
+            this.contentResponse.subscribe((<%= entityInstance %>) => {
                 this.<%= entityInstance %> = <%= entityInstance %>;
                 initForm();
             });
         } else {
-            initForm();
+            this.activatedRoute.data.subscribe(({<%= entityInstance %>}) => {
+                this.<%= entityInstance %> = <%= entityInstance %>;
+                initForm();
+            });
         }
         <%_ for (idx in queries) { _%>
         <%- queries[idx] %>
@@ -232,12 +235,12 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%_ } _%>
     // noinspection JSMethodCanBeStatic
     previousState() {
-        if (this.parentModalId) {
+        if (this.contentClose) {
             this.eventManager.broadcast({
                 name: '<%= entityInstance %>ListModification',
                 content: 'Created or updated an <%= entityInstance %>'
             });
-            this.parentModalService.closeModal(this.parentModalId);
+            this.contentClose();
         } else {
             window.history.back();
         }
