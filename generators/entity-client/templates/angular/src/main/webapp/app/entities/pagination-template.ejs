@@ -153,10 +153,18 @@ search() {
         const fieldNameHumanized = fields[idx].fieldNameHumanized;
         const fieldType = fields[idx].fieldType;
         const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
-        const fieldIsEnum = fields[idx].fieldIsEnum _%>
+        const fieldIsEnum = fields[idx].fieldIsEnum; _%>
     <%_ if (fieldIsEnum) { _%>
     if (this.filters.<%= fieldName %> && this.filters.<%= fieldName %>.length > 0) {
         this.currentSearch += ` AND <%= fieldName %>:${this.filters.<%= fieldName %>}`;
+    }
+    <%_ } else if( ['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
+    if (this.filters.<%= fieldName %>) {
+        this.currentSearch += ` AND <%= fieldName %>:\"${moment(this.filters.<%= fieldName %>).format("YYYY-MM-DDTHH:mm:ss")}Z\"`;
+    }
+    <%_ } else if( fieldType === 'LocalDate') { _%>
+    if (this.filters.<%= fieldName %>) {
+        this.currentSearch += ` AND <%= fieldName %>:\"${moment(this.filters.<%= fieldName %>).format("YYYY-MM-DD")}\"`;
     }
     <%_ } else { _%>
     if (this.filters.<%= fieldName %>) {

@@ -35,6 +35,7 @@ import {
 } from 'app/shared/model/<%= entityModelFileName %>.model';
 import { <%= entityAngularName %>Service } from '../<%= entityFileName %>.service';
 import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-modal.service';
+import * as moment from 'moment'
 
 @Component({
     selector: '<%= jhiPrefixDashed %>-<%= entityFileName %>-list',
