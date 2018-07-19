@@ -81,9 +81,12 @@ constructor(
     };
 }
 
-loadAll(reset?): void {
+loadAll(reset?, loadMore?): void {
     if (reset) {
         this.pageIndex = 1;
+    }
+    if (loadMore) {
+        this.pageIndex++;
     }
     this.loading = true;
     <%_ if (searchEngine === 'elasticsearch') { _%>
@@ -97,12 +100,23 @@ loadAll(reset?): void {
         })
         .subscribe(
         (res: HttpResponse<I<%= entityAngularName %>[]>) => {
-        this.<%= entityInstancePlural %> = res.body;
-        this.totalItems = parseInt(res.headers.get('x-total-count'), 10);
-        this.loading = false;
-    },
-    (res: HttpErrorResponse) => this.onError(res.message)
-    );
+            if (loadMore) {
+                if (res.body.length > 0) {
+                    this.<%= entityInstancePlural %>.push(...res.body);
+                } else {
+                    this.pageIndex = 1;
+                    if (this.pageSize < this.<%= entityInstancePlural %>.length) {
+                        this.pageSize = this.<%= entityInstancePlural %>.length;
+                    }
+                }
+            } else {
+                this.<%= entityInstancePlural %> = res.body;
+                this.totalItems = parseInt(res.headers.get('x-total-count'), 10);
+            }
+            this.loading = false;
+        },
+        (res: HttpErrorResponse) => this.onError(res.message)
+        );
         return;
     }
     <%_ } _%>
@@ -112,9 +126,20 @@ loadAll(reset?): void {
             sort: this.sort()
         }).subscribe(
         (res: HttpResponse<I<%= entityAngularName %>[]>) => {
-            this.<%= entityInstancePlural %> = res.body;
-            this.totalItems = parseInt(res.headers.get('x-total-count'), 10)
-            this.currentSearch = '';
+            if (loadMore) {
+                if (res.body.length > 0) {
+                    this.<%= entityInstancePlural %>.push(...res.body);
+                } else {
+                    this.pageIndex = 1;
+                    if (this.pageSize < this.<%= entityInstancePlural %>.length) {
+                        this.pageSize = this.<%= entityInstancePlural %>.length;
+                    }
+                }
+            } else {
+                this.<%= entityInstancePlural %> = res.body;
+                this.totalItems = parseInt(res.headers.get('x-total-count'), 10);
+                this.currentSearch = '';
+            }
             this.loading = false;
         },
         (res: HttpErrorResponse) => this.onError(res.message)

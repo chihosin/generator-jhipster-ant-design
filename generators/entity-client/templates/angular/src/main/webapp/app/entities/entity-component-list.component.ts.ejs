@@ -16,9 +16,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+import { Subscription } from 'rxjs/index';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse, <%_ if (pagination !== 'no') { _%>HttpHeaders, <% } %>HttpResponse } from '@angular/common/http';
-import { Subscription } from 'rxjs/index';
 import { JhiEventManager, <% if (pagination !== 'no') { %>JhiParseLinks, <% } %>JhiAlertService<% if (fieldsContainBlob) { %>, JhiDataUtils<% } %> } from 'ng-jhipster';
 import { NzMessageService, NzModalRef, NzModalService } from 'ng-zorro-antd';
 import { Principal } from 'app/core';
@@ -34,7 +34,7 @@ import {
     }); _%>
 } from 'app/shared/model/<%= entityModelFileName %>.model';
 import { <%= entityAngularName %>Service } from '../<%= entityFileName %>.service';
-import { <%= entityAngularName %>ModalService } from '../<%= entityFileName %>-modal.service';
+import { <%= entityAngularName %>ModalService } from 'app/entities/<%= entityFileName %>';
 import * as moment from 'moment'
 
 @Component({
