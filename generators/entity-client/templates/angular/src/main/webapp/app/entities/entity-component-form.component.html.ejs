@@ -174,7 +174,7 @@
             <%_ if (relationshipType === 'many-to-one' || relationshipType === 'one-to-many' || ownerSide === true) { _%>
                 <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
                     <nz-form-item>
-                        <nz-form-label [nzSpan]="null"  nzRequired><%= relationshipNameHumanized %></nz-form-label>
+                        <nz-form-label [nzSpan]="null" <%_ if (relationshipRequired) { _%> nzRequired <%_ } _%>><%= relationshipNameHumanized %></nz-form-label>
                         <nz-form-control [nzSpan]="null"  nzHasFeedback>
                     <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
                             <nz-select style="width: 100%;" name="<%= relationshipName %>"
