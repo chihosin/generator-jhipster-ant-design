@@ -54,7 +54,7 @@
         </ng-template>
         <ng-template #loadMore>
             <div class="text-center mt-md">
-                <button nz-button (click)="loadAll()" [nzLoading]="loading" [nzType]="'dashed'"
+                <button nz-button (click)="loadAll(false,true)" [nzLoading]="loading" [nzType]="'dashed'"
                         style="min-width:200px;">加载更多
                 </button>
             </div>
