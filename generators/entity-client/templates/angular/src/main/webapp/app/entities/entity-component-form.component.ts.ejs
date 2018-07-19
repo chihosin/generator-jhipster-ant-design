@@ -369,7 +369,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             const uniqueRel = differentRelationships[key][0];
             if (uniqueRel.otherEntityAngularName !== entityAngularName) { _%>
 
-    loadMoreParents(holdData: boolean, value: any): void {
+    loadMore<%= uniqueRel.otherEntityAngularName %>s(holdData: boolean, value: any): void {
         if (!holdData) {
             this.parentPagingInfo.page = 0;
             this.parentPagingInfo.lockPaging = false;
