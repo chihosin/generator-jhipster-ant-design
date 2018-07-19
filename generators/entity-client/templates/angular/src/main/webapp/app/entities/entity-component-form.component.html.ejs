@@ -179,9 +179,11 @@
                     <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
                             <nz-select style="width: 100%;" name="<%= relationshipName %>"
                                 [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"
-                                (nzOpenChange)="loadMoreParents()" 
-                                (nzScrollToBottom)="loadMoreParents(true)" 
-                                (nzOnSearch)="loadMoreParents(false, $event)"
+
+                                (nzOpenChange)="loadMore<%= relationshipNameCapitalized %>s()" 
+                                (nzScrollToBottom)="loadMore<%= relationshipNameCapitalized %>s(true)" 
+                                (nzOnSearch)="loadMore<%= relationshipNameCapitalized %>s(false, $event)"
+
                                 formControlName="<%=relationshipFieldName %>Id"
                                 nzAllowClear nzShowSearch nzServerSearch>
                                 <nz-option *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>;" 
