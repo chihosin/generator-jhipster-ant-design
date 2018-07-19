@@ -1,0 +1,64 @@
+<ng-container *ngSwitchCase="'searchArticle'">
+<%_ if (searchEngine === 'elasticsearch') { _%>
+<ng-container *ngTemplateOutlet="searchForm"></ng-container>
+<%_ } _%>
+<nz-card [nzBordered]="false">
+    <nz-list nzItemLayout="vertical" [nzLoading]="loading" [nzDataSource]="<%= entityInstancePlural %>" [nzRenderItem]="item"
+             [nzLoadMore]="loadMore">
+        <ng-template #item let-item>
+            <nz-list-item [nzContent]="nzContent" [nzExtra]="nzExtra" [nzActions]="[show,edit,remove,more]">
+                <ng-template #show>
+                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
+                </ng-template>
+                <ng-template #edit>
+                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
+                </ng-template>
+                <ng-template #remove>
+                    <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
+                </ng-template>
+                <ng-template #more>
+                    <nz-dropdown>
+                        <a class="ant-dropdown-link" nz-dropdown>
+                            更多
+                            <i class="anticon anticon-down"></i>
+                        </a>
+                        <ul nz-menu>
+                            <li nz-menu-item>...</li>
+                        </ul>
+                    </nz-dropdown>
+                </ng-template>
+                <ng-template #nzExtra>
+                    <div style="width: 272px; height: 1px;"></div>
+                </ng-template>
+                <nz-list-item-meta [nzTitle]="nzTitle" [nzDescription]="nzDescription">
+                    <ng-template #nzTitle>
+                        <a>{{item.id}}</a>
+                    </ng-template>
+                    <ng-template #nzDescription>
+                        <nz-tag>...</nz-tag>
+                    </ng-template>
+                </nz-list-item-meta>
+                <ng-template #nzContent>
+                    <p>...</p>
+                    <div class="mt-md d-flex">
+                        <nz-avatar [nzSrc]="item.avatar" [nzSize]="'small'" class="mr-sm"></nz-avatar>
+                        <a href="{{item.href}}" target="_blank">{{item.owner}}</a>
+                        <span class="px-sm">发布在</span>
+                        <a href="{{item.href}}" target="_blank">{{item.href}}</a>
+                        <time class="pl-md text-grey" title="创建日期">...</time>
+                    </div>
+                </ng-template>
+            </nz-list-item>
+        </ng-template>
+        <ng-template #loadMore>
+            <div class="text-center mt-md">
+                <button nz-button (click)="loadAll()" [nzLoading]="loading" [nzType]="'dashed'"
+                        style="min-width:200px;">加载更多
+                </button>
+            </div>
+        </ng-template>
+    </nz-list>
+</nz-card>
+</ng-container>

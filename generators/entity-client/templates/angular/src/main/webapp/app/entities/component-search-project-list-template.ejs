@@ -1,0 +1,26 @@
+<ng-container *ngSwitchCase="'searchProject'">
+<%_ if (searchEngine === 'elasticsearch') { _%>
+<ng-container *ngTemplateOutlet="searchForm"></ng-container>
+<%_ } _%>
+<nz-list [nzLoading]="loading" [nzRenderItem]="item" [nzDataSource]="<%= entityInstancePlural %>"
+         [nzGrid]="{gutter: 24, lg: 6, md: 8, sm: 12, xs: 24 }">
+    <ng-template #item let-item>
+        <nz-list-item>
+            <nz-card nzHoverable [nzCover]="cover">
+                <ng-template #cover>
+                    <img alt="{{item.id}}"
+                         src="https://gw.alipayobjects.com/zos/rmsportal/HrxcVbrKnCJOZvtzSqjN.png">
+                </ng-template>
+                <nz-card-meta [nzTitle]="nzTitle" [nzDescription]="'内容'">
+                    <ng-template #nzTitle>
+                        <a>{{item.id}}</a>
+                    </ng-template>
+                </nz-card-meta>
+                <div class="card-item-content">
+                    <span class="text-grey">{{'底部'}}</span>
+                </div>
+            </nz-card>
+        </nz-list-item>
+    </ng-template>
+</nz-list>
+</ng-container>

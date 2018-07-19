@@ -31,10 +31,10 @@
                            [class.anticon-menu-unfold]="isCollapsed"
                            (click)="isCollapsed=!isCollapsed"></i>
                     </div>
-                    <search class="search-box"></search>
+                    <<%= jhiPrefixDashed %>-search class="search-box"></<%= jhiPrefixDashed %>-search>
                     <ul class="top-nav">
                         <li>
-                            <notify></notify>
+                            <<%= jhiPrefixDashed %>-notify></<%= jhiPrefixDashed %>-notify>
                         </li>
                         <li class="user-info">
                             <nz-dropdown nzplacement="bottomRight">

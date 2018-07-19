@@ -1,0 +1,58 @@
+<ng-container *ngSwitchCase="'searchApp'">
+<%_ if (searchEngine === 'elasticsearch') { _%>
+<ng-container *ngTemplateOutlet="searchForm"></ng-container>
+<%_ } _%>
+<nz-row [nzGutter]="16">
+    <nz-col *ngFor="let item of <%= entityInstancePlural %> ;trackBy: trackId" [nzLg]="8" [nzMd]="12" [nzSm]="24">
+    <nz-list-item>
+        <nz-card nzHoverable [nzActions]="[show,edit,remove,more]" style="width: 100%;">
+            <ng-template #show>
+                <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
+                <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
+            </ng-template>
+            <ng-template #edit>
+                <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
+                <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
+            </ng-template>
+            <ng-template #remove>
+                <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
+            </ng-template>
+            <ng-template #more>
+                <nz-dropdown>
+                    <a class="ant-dropdown-link" nz-dropdown>
+                        更多
+                        <i class="anticon anticon-down"></i>
+                    </a>
+                    <ul nz-menu>
+                        <li nz-menu-item>...</li>
+                    </ul><tag-select>
+                        <nz-tag *ngFor="let i of categories; let idx = index" nzMode="checkable" [nzChecked]="i.value" (nzCheckedChange)="changeCategory($event, idx)">
+                            {{i.text}}
+                        </nz-tag>
+                    </tag-select>
+                </nz-dropdown>
+            </ng-template>
+            <nz-card-meta [nzTitle]="item.id" [nzAvatar]="nzAvatar">
+                <ng-template #nzAvatar>
+                    <nz-avatar nzSize="small"
+                            [nzSrc]="'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png'"></nz-avatar>
+                </ng-template>
+            </nz-card-meta>
+            <div class="card-info d-flex">
+                <div>
+                    <p>活跃用户</p>
+                    <p>10
+                        <em class="wan">万</em>
+                    </p>
+                </div>
+                <div>
+                    <p>新增用户</p>
+                    <p>1.675</p>
+                </div>
+            </div>
+        </nz-card>
+    </nz-list-item>
+    </nz-col>
+</nz-row>
+</nz-list>
+</ng-container>
