@@ -26,7 +26,7 @@
                 _%>
             <nz-col nzMd="8" nzSm="24" <%_ if( idx > 1 ) { _%> *ngIf="expandSearchForm" <%_ } _%>>
                 <nz-form-item>
-                    <nz-form-label nzFor="<%= fieldName %>"><%= fieldTitle %></nz-form-label>
+                    <nz-form-label [nzSpan]="6" nzFor="<%= fieldName %>"><%= fieldTitle %></nz-form-label>
                     <nz-form-control>
                         <%_ if (fields[idx].fieldType === 'String') { _%>
                         <input nz-input name="<%= fieldName %>" placeholder="" type="text" [(ngModel)]="filters.<%= fieldName %>"/>
