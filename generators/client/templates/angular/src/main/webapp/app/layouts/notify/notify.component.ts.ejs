@@ -7,7 +7,7 @@ import { NoticeItem, NoticeIconList } from '@delon/abc';
  * 菜单通知
  */
 @Component({
-    selector: 'notify',
+    selector: '<%= jhiPrefixDashed %>-notify',
     template: `
     <notice-icon
         [data]="data"
@@ -36,8 +36,9 @@ export class NotifyComponent {
 
         notices.forEach(item => {
             const newItem = { ...item };
-            if (newItem.datetime)
+            if (newItem.datetime) {
                 newItem.datetime = distanceInWordsToNow(item.datetime, { locale: (window as any).__locale__ });
+            }
             if (newItem.extra && newItem.status) {
                 newItem.color = ({
                     todo: undefined,
@@ -52,7 +53,9 @@ export class NotifyComponent {
     }
 
     loadData() {
-        if (this.loading) return;
+        if (this.loading) {
+            return;
+        }
         this.loading = true;
         setTimeout(() => {
             this.data = this.updateNoticeData([{

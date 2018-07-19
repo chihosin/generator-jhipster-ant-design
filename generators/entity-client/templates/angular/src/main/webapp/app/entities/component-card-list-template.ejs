@@ -1,0 +1,54 @@
+<ng-container *ngSwitchCase="'cardList'">
+<nz-row [nzGutter]="16">
+    <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
+        <nz-list-item>
+            <button nz-button [nzType]="'dashed'" class="card-list-btn-block"
+                    (click)="<%= entityInstance %>ModalService.createEditModal()">
+                <i class="anticon anticon-plus"></i>
+                <span>新增</span>
+            </button>
+        </nz-list-item>
+    </nz-col>
+    <nz-col *ngFor="let item of <%= entityInstancePlural %> ;trackBy: trackId" [nzLg]="8" [nzMd]="12" [nzSm]="24">
+        <nz-list-item>
+            <nz-card nzHoverable *ngIf="item !== null" [nzActions]="[show, edit, remove, more]"
+                    style="width: 100%">
+                <ng-template #show>
+                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
+                </ng-template>
+                <ng-template #edit>
+                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
+                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
+                </ng-template>
+                <ng-template #remove>
+                    <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
+                </ng-template>
+                <ng-template #more>
+                    <nz-dropdown>
+                        <a class="ant-dropdown-link" nz-dropdown>
+                            更多
+                            <i class="anticon anticon-down"></i>
+                        </a>
+                        <ul nz-menu>
+                            <li nz-menu-item>...</li>
+                        </ul>
+                    </nz-dropdown>
+                </ng-template>
+                <nz-card-meta [nzAvatar]="nzAvatar" [nzTitle]="nzTitle" [nzDescription]="nzDescription"
+                            style="height: 95px">
+                    <ng-template #nzAvatar>
+                        <nz-avatar nzSize="large" [nzSrc]="item.avatar"></nz-avatar>
+                    </ng-template>
+                    <ng-template #nzTitle>
+                        <a>{{item.id}}</a>
+                    </ng-template>
+                    <ng-template #nzDescription>
+                        <p class="block-description">内容</p>
+                    </ng-template>
+                </nz-card-meta>
+            </nz-card>
+        </nz-list-item>
+    </nz-col>
+</nz-row>
+</ng-container>

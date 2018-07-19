@@ -17,9 +17,16 @@
  limitations under the License.
 -%>
 <ng-container [ngSwitch]="mode">
-    <ng-container *ngSwitchCase="'tableList'">
-        <form nz-form [nzLayout]="'inline'" (ngSubmit)="search()" class="filter-form">
-            <nz-row>
+    <%- include('component-table-list-template', {toArrayString: toArrayString}); -%>
+    <%- include('component-basic-list-template', {toArrayString: toArrayString}); -%>
+    <%- include('component-card-list-template', {toArrayString: toArrayString}); -%>
+    <%- include('component-search-app-list-template', {toArrayString: toArrayString}); -%>
+    <%- include('component-search-article-list-template', {toArrayString: toArrayString}); -%>
+    <%- include('component-search-project-list-template', {toArrayString: toArrayString}); -%>
+    <%_ if (searchEngine === 'elasticsearch') { _%>
+    <ng-template #searchForm>
+        <nz-card [nzBordered]="false">
+            <form nz-form >
                 <%_ for (idx in fields) {
                     const fieldName = fields[idx].fieldName;
                     const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
@@ -42,544 +49,42 @@
                         fieldInputType = 'hidden';
                     }
                     _%>
-                <nz-col nzMd="8" nzSm="24" <%_ if( idx > 1 ) { _%> *ngIf="expandSearchForm" <%_ } _%>>
-                    <nz-form-item>
+                <standard-form-row [title]="''" style="padding-bottom: 11px;">
+                    <nz-form-item class="ad-standard-form-row">
                         <nz-form-label nzFor="<%= fieldName %>"><%= fieldTitle %></nz-form-label>
                         <nz-form-control>
                             <%_ if (fields[idx].fieldType === 'String') { _%>
-                            <input nz-input name="<%= fieldName %>" placeholder="" type="text" [(ngModel)]="filters.<%= fieldName %>"/>
+                            <input nz-input name="<%= fieldName %>" placeholder="" type="text" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
                             <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'text') { _%>
-                            <textarea nz-input name="<%= fieldName %>" placeholder="" nzAutosize [(ngModel)]="filters.<%= fieldName %>"></textarea>
+                            <textarea nz-input name="<%= fieldName %>" placeholder="" nzAutosize [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" ></textarea>
                             <%_ } else if (['Integer', 'Long'].includes(fieldType)) { _%>
-                            <nz-input-number name="<%= fieldName %>" [nzStep]="1" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                            <nz-input-number name="<%= fieldName %>" [nzStep]="1" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
                             <%_ } else if (['Float', 'Double'].includes(fieldType)) { _%>
-                            <nz-input-number name="<%= fieldName %>" [nzStep]="0.1" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                            <nz-input-number name="<%= fieldName %>" [nzStep]="0.1" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
                             <%_ } else if (fieldType === 'BigDecimal') { _%>
-                            <nz-input-number name="<%= fieldName %>" [nzStep]="0.01" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                            <nz-input-number name="<%= fieldName %>" [nzStep]="0.01" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
                             <%_ } else if (fieldType === 'LocalDate') { _%>
-                            <nz-date-picker name="<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
+                            <nz-date-picker name="<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-date-picker>
                             <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
-                            <nz-date-picker nzShowTime name="<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
+                            <nz-date-picker nzShowTime name="<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-date-picker>
                             <%_ } else if (fieldType === 'Boolean') { _%>
-                            <input nz-input name="<%= fieldName %>" type="checkbox" [(ngModel)]="filters.<%= fieldName %>"/>
+                            <input nz-input name="<%= fieldName %>" type="checkbox" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
                             <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') { _%>
-                            <input nz-input name="<%= fieldName %>" type="hidden" [(ngModel)]="filters.<%= fieldName %>"/>
+                            <input nz-input name="<%= fieldName %>" type="hidden" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
                             <%_ } else if (fields[idx].fieldIsEnum) { _%>
-                            <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>">
+                            <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
                                 <nz-option *ngFor="let value of <%= fieldName %>Text.filter;"
-                                           [nzLabel]="value.text"
-                                           [nzValue]="value.value">
+                                        [nzLabel]="value.text"
+                                        [nzValue]="value.value">
                                 </nz-option>
                             </nz-select>
                             <%_ } _%>
                         </nz-form-control>
                     </nz-form-item>
-                </nz-col>
+                </standard-form-row>
                 <%_ } _%>
-                <nz-col [nzSpan]="expandSearchForm ? 24 : 8" [class.text-right]="expandSearchForm"
-                        class="search-form-control">
-                    <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading">查询</button>
-                    <button nz-button type="reset" (click)="clear()" class="mx-sm">重置</button>
-                    <%_ if (fields.length > 2) { _%>
-                    <a (click)="expandSearchForm=!expandSearchForm">
-                        {{expandSearchForm ? '收起' : '展开'}}
-                        <i class="anticon" [class.anticon-down]="!expandSearchForm"
-                           [class.anticon-up]="expandSearchForm"></i>
-                    </a>
-                    <%_ } _%>
-                </nz-col>
-            </nz-row>
-        </form>
-        <br/>
-        <button *ngIf="modal" nz-button [nzType]="'primary'" (click)="<%= entityInstance %>ModalService.createEditModal()">
-            <i class="anticon anticon-plus"></i>
-            <span>新建</span>
-        </button>
-        <button *ngIf="!modal" nz-button [nzType]="'primary'" [routerLink]="['/<%= entityModelFileName %>/new']">
-            <i class="anticon anticon-plus"></i>
-            <span>新建</span>
-        </button>
-        <ng-container *ngIf="selected.length > 0">
-            <button nz-button class="ml-sm" (click)="batchDelete()">
-                <i class="anticon anticon-delete"></i>
-                <span>删除</span>
-            </button>
-            <nz-dropdown [nzPlacement]="'bottomLeft'">
-                <button nz-button nz-dropdown class="ml-sm">
-                    更多
-                    <i class="anticon anticon-down"></i>
-                </button>
-                <ul nz-menu>
-                    <li nz-menu-item>...</li>
-                </ul>
-            </nz-dropdown>
-        </ng-container>
-        <br/>
-        <br/>
-        <nz-alert [nzType]="'info'" [nzShowIcon]="true" [nzMessage]="message">
-            <ng-template #message>
-                已选择 <strong class="text-primary">{{selected.length}}</strong> 项
-                <a *ngIf="selected.length > 0" (click)="updateSelected(false)" class="ml-lg">清空</a>
-            </ng-template>
-        </nz-alert>
-        <br/>
-        <nz-table
-            #datagrid
-            nzShowSizeChanger
-            [nzFrontPagination]="true"
-            [nzData]="<%= entityInstancePlural %>"
-            [nzLoading]="loading"
-            [(nzPageIndex)]="pageIndex"
-            [(nzPageSize)]="pageSize"
-            [nzShowTotal]="pageMessage"
-            (nzPageSizeChange)="loadAll(true)">
-            <ng-template #pageMessage>
-                <span class="mr-md">共 {{totalItems}} 项</span>
-            </ng-template>
-            <thead (nzSortChange)="updateSort($event)" nzSingleSort>
-            <tr>
-                <th nzShowCheckbox [nzChecked]="selectedAll" [nzIndeterminate]="selectedIndeterminate"
-                    (nzCheckedChange)="updateSelected($event)"></th>
-                <%_ for (idx in fields) {
-                    const fieldName = fields[idx].fieldName;
-                    const fieldTitle = fields[idx].javadoc ? fields[idx].javadoc: fields[idx].fieldNameHumanized;
-                    const fieldType = fields[idx].fieldType; _%>
-
-                <%_ if (fields[idx].fieldIsEnum) { _%>
-                <th nzShowSort nzSortKey="<%= fieldName %>">
-                    <%= fieldTitle %>
-                    <nz-dropdown nzTrigger="click" [nzClickHide]="false">
-                        <i class="anticon anticon-filter ant-table-filter-icon"
-                           [class.ant-table-filter-selected]="filters.<%= fieldName %> && filters.<%= fieldName %>.length > 0"
-                           nz-dropdown></i>
-                        <div class="custom-filter-dropdown">
-                            <nz-select [nzMaxMultipleCount]="3" nzMode="multiple" [nzShowSearch]="true"
-                                       name="<%= fieldName %>"
-                                       id="list-filter-<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>">
-                                <nz-option *ngFor="let item of <%= fieldName %>Text.filter;" [nzLabel]="item.text"
-                                           [nzValue]="item.value"></nz-option>
-                            </nz-select>
-                            <button nz-button [nzLoading]="loading" nzSearch (click)="search()">确定
-                            </button>
-                        </div>
-                    </nz-dropdown>
-                </th>
-                <%_ } else if (fieldType === 'LocalDate') { _%>
-                <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
-                <%_ } else { _%>
-                <th nzShowSort nzSortKey="<%= fieldName %>">
-                    <%= fieldTitle %>
-                    <nz-dropdown nzTrigger="click" [nzClickHide]="false">
-                        <i class="anticon anticon-filter ant-table-filter-icon"
-                           [class.ant-table-filter-selected]="filters.<%= fieldName %>"
-                           nz-dropdown></i>
-                        <div class="custom-filter-dropdown">
-                            <input type="text" nz-input name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>">
-                            <button nz-button nzType="primary" [nzLoading]="loading" nzSearch (click)="search()">确定
-                            </button>
-                        </div>
-                    </nz-dropdown>
-                </th>
-                <%_ } _%>
-                <%_ } _%>
-                <th nzWidth="240px">操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let item of datagrid.data ;trackBy: trackId">
-                <td nzShowCheckbox [nzChecked]="selectedComparator(item)"
-                    (nzCheckedChange)="updateSelected($event, item)"></td>
-
-                <%_ for (idx in fields) {
-                    const fieldName = fields[idx].fieldName;
-                    const fieldTitle = fields[idx].javadoc ? fields[idx].javadoc: fields[idx].fieldNameHumanized;
-                    const fieldType = fields[idx].fieldType;
-                    _%>
-
-                <%_ if (fields[idx].fieldIsEnum) { _%>
-                <td>{{<%= fieldName %>Text.text[item.<%= fieldName %>]}}</td>
-                <%_ } else if (fieldType === 'LocalDate') { _%>
-                <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
-                <%_ } else { _%>
-                <td>{{item.<%= fieldName %>}}</td>
-                <%_ } _%>
-                <%_ } _%>
-                <td>
-                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                    <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
-                    <nz-divider nzType="vertical"></nz-divider>
-                    <nz-dropdown>
-                        <a class="ant-dropdown-link" nz-dropdown>
-                            更多
-                            <i class="anticon anticon-down"></i>
-                        </a>
-                        <ul nz-menu>
-                            <li nz-menu-item>...</li>
-                        </ul>
-                    </nz-dropdown>
-                </td>
-            </tr>
-            </tbody>
-        </nz-table>
-    </ng-container>
-    <ng-container *ngSwitchCase="'basicList'">
-        <nz-card [nzBordered]="false">
-            <div class="d-flex align-items-center mb-lg">
-                <h3 class="flex-1 text-lg">列表</h3>
-                <%_ if (searchEngine === 'elasticsearch') { _%>
-                <div style="display: inherit;">
-                    <nz-radio-group class="mr-md">
-                        <label nz-radio-button [nzValue]="'all'" style="margin-right: -4px">
-                            <span>全部</span>
-                        </label>
-                        <label nz-radio-button [nzValue]="'progress'" style="margin-right: -4px">
-                            <span>进行中</span>
-                        </label>
-                        <label nz-radio-button [nzValue]="'waiting'" style="margin-right: -4px">
-                            <span>等待中</span>
-                        </label>
-                    </nz-radio-group>
-                    <form nz-form (ngSubmit)="search()" class="filter-form">
-                        <nz-input-group nzSuffixIcon="anticon anticon-search" class="basic-list-input-group">
-                            <input type="text" nz-input name="_all" [(ngModel)]="this.filters._all"
-                                   placeholder="请输入">
-                        </nz-input-group>
-                    </form>
-                </div>
-                <%_ } _%>
-            </div>
-            <button nz-button [nzType]="'dashed'" class="basic-list-btn-block mb-sm"
-                    (click)="<%= entityInstance %>ModalService.createEditModal()">
-                <i class="anticon anticon-plus"></i>
-                <span>添加</span>
-            </button>
-            <nz-list [nzDataSource]="<%= entityInstancePlural %>" [nzLoading]="loading" [nzRenderItem]="item" [nzPagination]="pagination">
-                <ng-template #item let-item>
-                    <nz-list-item [nzContent]="nzContent" [nzActions]="[edit, more]">
-                        <ng-template #edit>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
-                            <nz-divider nzType="vertical"></nz-divider>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
-                            <nz-divider nzType="vertical"></nz-divider>
-                            <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
-                        </ng-template>
-                        <ng-template #more>
-                            <nz-dropdown>
-                                <a class="ant-dropdown-link" nz-dropdown>
-                                    更多
-                                    <i class="anticon anticon-down"></i>
-                                </a>
-                                <ul nz-menu>
-                                    <li nz-menu-item>...</li>
-                                </ul>
-                            </nz-dropdown>
-                        </ng-template>
-                        <nz-list-item-meta [nzTitle]="nzTitle" [nzDescription]="'内容'" [nzAvatar]="nzAvatar">
-                            <ng-template #nzTitle>
-                                <a>{{item.id}}</a>
-                            </ng-template>
-                            <ng-template #nzAvatar>
-                                <nz-avatar [nzSrc]="item.avatar" nzSize="large" [nzShape]="'square'"></nz-avatar>
-                            </ng-template>
-                        </nz-list-item-meta>
-                        <ng-template #nzContent>
-                            <div class="width-md">
-                                <div class="d-flex text-grey-dark">
-                                    <div class="flex-1">
-                                        左区域
-                                        <p>{{item.left}}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        右区域
-                                        <p>{{item.right}}</p>
-                                    </div>
-                                </div>
-                                <nz-progress [nzPercent]="20" [nzStatus]="'info'" [nzStrokeWidth]="6"></nz-progress>
-                            </div>
-                        </ng-template>
-                    </nz-list-item>
-                </ng-template>
-                <ng-template #pagination>
-                    <nz-pagination [nzTotal]="<%= entityInstancePlural %>.length" [nzPageSize]="10"
-                                   (nzPageIndexChange)="loadAll(true)"></nz-pagination>
-                </ng-template>
-            </nz-list>
+            </form>
         </nz-card>
-    </ng-container>
-    <ng-container *ngSwitchCase="'cardList'">
-        <nz-list [nzLoading]="loading" [nzDataSource]="<%= entityInstancePlural %>" [nzRenderItem]="item"
-                 [nzGrid]="{gutter: 24, lg: 8, md: 12, sm: 24, xs: 24 }">
-            <ng-template #item let-item let-index="index">
-                <nz-list-item *ngIf="index === 0">
-                    <button nz-button [nzType]="'dashed'" class="card-list-btn-block"
-                            (click)="deskModalService.createEditModal()">
-                        <i class="anticon anticon-plus"></i>
-                        <span>新增</span>
-                    </button>
-                </nz-list-item>
-                <nz-list-item>
-                    <nz-card nzHoverable *ngIf="item !== null" [nzActions]="[show, edit, remove, more]"
-                             style="width: 100%">
-                        <ng-template #show>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
-                        </ng-template>
-                        <ng-template #edit>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
-                        </ng-template>
-                        <ng-template #remove>
-                            <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
-                        </ng-template>
-                        <ng-template #more>
-                            <nz-dropdown>
-                                <a class="ant-dropdown-link" nz-dropdown>
-                                    更多
-                                    <i class="anticon anticon-down"></i>
-                                </a>
-                                <ul nz-menu>
-                                    <li nz-menu-item>...</li>
-                                </ul>
-                            </nz-dropdown>
-                        </ng-template>
-                        <nz-card-meta [nzAvatar]="nzAvatar" [nzTitle]="nzTitle" [nzDescription]="nzDescription"
-                                      style="height: 95px">
-                            <ng-template #nzAvatar>
-                                <nz-avatar nzSize="large" [nzSrc]="item.avatar"></nz-avatar>
-                            </ng-template>
-                            <ng-template #nzTitle>
-                                <a>{{item.id}}</a>
-                            </ng-template>
-                            <ng-template #nzDescription>
-                                <p class="block-description">内容</p>
-                            </ng-template>
-                        </nz-card-meta>
-                    </nz-card>
-                </nz-list-item>
-            </ng-template>
-        </nz-list>
-    </ng-container>
-    <ng-container *ngSwitchCase="'searchArticle'">
-        <%_ if (searchEngine === 'elasticsearch') { _%>
-        <nz-card [nzBordered]="false">
-            <ng-container *ngTemplateOutlet="searchForm"></ng-container>
-        </nz-card>
-        <%_ } _%>
-        <nz-card [nzBordered]="false">
-            <nz-list nzItemLayout="vertical" [nzLoading]="loading" [nzDataSource]="<%= entityInstancePlural %>" [nzRenderItem]="item"
-                     [nzLoadMore]="loadMore">
-                <ng-template #item let-item>
-                    <nz-list-item [nzContent]="nzContent" [nzExtra]="nzExtra" [nzActions]="[show,edit,remove,more]">
-                        <ng-template #show>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
-                        </ng-template>
-                        <ng-template #edit>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
-                        </ng-template>
-                        <ng-template #remove>
-                            <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
-                        </ng-template>
-                        <ng-template #more>
-                            <nz-dropdown>
-                                <a class="ant-dropdown-link" nz-dropdown>
-                                    更多
-                                    <i class="anticon anticon-down"></i>
-                                </a>
-                                <ul nz-menu>
-                                    <li nz-menu-item>...</li>
-                                </ul>
-                            </nz-dropdown>
-                        </ng-template>
-                        <ng-template #nzExtra>
-                            <div style="width: 272px; height: 1px;"></div>
-                        </ng-template>
-                        <nz-list-item-meta [nzTitle]="nzTitle" [nzDescription]="nzDescription">
-                            <ng-template #nzTitle>
-                                <a>{{item.id}}</a>
-                            </ng-template>
-                            <ng-template #nzDescription>
-                                <nz-tag>...</nz-tag>
-                            </ng-template>
-                        </nz-list-item-meta>
-                        <ng-template #nzContent>
-                            <p>...</p>
-                            <div class="mt-md d-flex">
-                                <nz-avatar [nzSrc]="item.avatar" [nzSize]="'small'" class="mr-sm"></nz-avatar>
-                                <a href="{{item.href}}" target="_blank">{{item.owner}}</a>
-                                <span class="px-sm">发布在</span>
-                                <a href="{{item.href}}" target="_blank">{{item.href}}</a>
-                                <time class="pl-md text-grey" title="创建日期">...</time>
-                            </div>
-                        </ng-template>
-                    </nz-list-item>
-                </ng-template>
-                <ng-template #loadMore>
-                    <div class="text-center mt-md">
-                        <button nz-button (click)="loadAll()" [nzLoading]="loading" [nzType]="'dashed'"
-                                style="min-width:200px;">加载更多
-                        </button>
-                    </div>
-                </ng-template>
-            </nz-list>
-        </nz-card>
-    </ng-container>
-    <ng-container *ngSwitchCase="'searchProject'">
-        <%_ if (searchEngine === 'elasticsearch') { _%>
-        <nz-card [nzBordered]="false">
-            <ng-container *ngTemplateOutlet="searchForm"></ng-container>
-        </nz-card>
-        <%_ } _%>
-        <nz-list [nzLoading]="loading" [nzRenderItem]="item" [nzDataSource]="<%= entityInstancePlural %>"
-                 [nzGrid]="{gutter: 24, lg: 6, md: 8, sm: 12, xs: 24 }">
-            <ng-template #item let-item>
-                <nz-list-item>
-                    <nz-card nzHoverable [nzCover]="cover">
-                        <ng-template #cover>
-                            <img alt="{{item.id}}"
-                                 src="https://gw.alipayobjects.com/zos/rmsportal/HrxcVbrKnCJOZvtzSqjN.png">
-                        </ng-template>
-                        <nz-card-meta [nzTitle]="nzTitle" [nzDescription]="'内容'">
-                            <ng-template #nzTitle>
-                                <a>{{item.id}}</a>
-                            </ng-template>
-                        </nz-card-meta>
-                        <div class="card-item-content">
-                            <span class="text-grey">{{'底部'}}</span>
-                        </div>
-                    </nz-card>
-                </nz-list-item>
-            </ng-template>
-        </nz-list>
-    </ng-container>
-    <ng-container *ngSwitchCase="'searchApp'">
-        <%_ if (searchEngine === 'elasticsearch') { _%>
-        <nz-card [nzBordered]="false">
-            <ng-container *ngTemplateOutlet="searchForm"></ng-container>
-        </nz-card>
-        <%_ } _%>
-        <nz-list [nzLoading]="loading" [nzDataSource]="<%= entityInstancePlural %>" [nzRenderItem]="item"
-                 [nzGrid]="{ gutter: 24, xl: 6, lg: 8, md: 8, sm: 12, xs: 24 }">
-            <ng-template #item let-item>
-                <nz-list-item>
-                    <nz-card nzHoverable [nzActions]="[show,edit,remove,more]">
-                        <ng-template #show>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createViewModal(item.id)">查看</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'view']">查看</a>
-                        </ng-template>
-                        <ng-template #edit>
-                            <a *ngIf="modal" (click)="<%= entityInstance %>ModalService.createEditModal(item.id)">编辑</a>
-                            <a *ngIf="!modal" [routerLink]="['/<%= entityModelFileName %>', item.id, 'edit']">编辑</a>
-                        </ng-template>
-                        <ng-template #remove>
-                            <a nz-popconfirm nzTitle="确定删除此项？" (nzOnConfirm)="delete(item)">删除</a>
-                        </ng-template>
-                        <ng-template #more>
-                            <nz-dropdown>
-                                <a class="ant-dropdown-link" nz-dropdown>
-                                    更多
-                                    <i class="anticon anticon-down"></i>
-                                </a>
-                                <ul nz-menu>
-                                    <li nz-menu-item>...</li>
-                                </ul><tag-select>
-                                    <nz-tag *ngFor="let i of categories; let idx = index" nzMode="checkable" [nzChecked]="i.value" (nzCheckedChange)="changeCategory($event, idx)">
-                                        {{i.text}}
-                                    </nz-tag>
-                                </tag-select>
-                            </nz-dropdown>
-                        </ng-template>
-                        <nz-card-meta [nzTitle]="item.id" [nzAvatar]="nzAvatar">
-                            <ng-template #nzAvatar>
-                                <nz-avatar nzSize="small"
-                                           [nzSrc]="'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png'"></nz-avatar>
-                            </ng-template>
-                        </nz-card-meta>
-                        <div class="card-info d-flex">
-                            <div>
-                                <p>活跃用户</p>
-                                <p>10
-                                    <em class="wan">万</em>
-                                </p>
-                            </div>
-                            <div>
-                                <p>新增用户</p>
-                                <p>1.675</p>
-                            </div>
-                        </div>
-                    </nz-card>
-                </nz-list-item>
-            </ng-template>
-        </nz-list>
-    </ng-container>
-    <%_ if (searchEngine === 'elasticsearch') { _%>
-    <ng-template #searchForm>
-        <form nz-form >
-            <%_ for (idx in fields) {
-                const fieldName = fields[idx].fieldName;
-                const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
-                const fieldNameHumanized = fields[idx].fieldNameHumanized;
-                const fieldType = fields[idx].fieldType;
-                const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent;
-                const fieldTitle = fields[idx].javadoc || fields[idx].fieldNameHumanized;
-                let fieldInputType = 'text';
-                let ngModelOption = '';
-                const translationKey = `${i18nKeyPrefix}.${fieldName}`;
-                if (['Integer', 'Long', 'Float', 'Double', 'BigDecimal'].includes(fieldType)) {
-                    fieldInputType = 'number';
-                } else if (fieldType === 'LocalDate') {
-                    fieldInputType = 'date';
-                } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) {
-                    fieldInputType = 'datetime-local';
-                } else if (fieldType === 'Boolean') {
-                    fieldInputType = 'checkbox';
-                } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') {
-                    fieldInputType = 'hidden';
-                }
-                _%>
-            <standard-form-row [title]="''" style="padding-bottom: 11px;">
-                <nz-form-item class="ad-standard-form-row">
-                    <nz-form-label nzFor="<%= fieldName %>"><%= fieldTitle %></nz-form-label>
-                    <nz-form-control>
-                        <%_ if (fields[idx].fieldType === 'String') { _%>
-                        <input nz-input name="<%= fieldName %>" placeholder="" type="text" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
-                        <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'text') { _%>
-                        <textarea nz-input name="<%= fieldName %>" placeholder="" nzAutosize [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" ></textarea>
-                        <%_ } else if (['Integer', 'Long'].includes(fieldType)) { _%>
-                        <nz-input-number name="<%= fieldName %>" [nzStep]="1" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
-                        <%_ } else if (['Float', 'Double'].includes(fieldType)) { _%>
-                        <nz-input-number name="<%= fieldName %>" [nzStep]="0.1" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
-                        <%_ } else if (fieldType === 'BigDecimal') { _%>
-                        <nz-input-number name="<%= fieldName %>" [nzStep]="0.01" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-input-number>
-                        <%_ } else if (fieldType === 'LocalDate') { _%>
-                        <nz-date-picker name="<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-date-picker>
-                        <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
-                        <nz-date-picker nzShowTime name="<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" ></nz-date-picker>
-                        <%_ } else if (fieldType === 'Boolean') { _%>
-                        <input nz-input name="<%= fieldName %>" type="checkbox" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
-                        <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') { _%>
-                        <input nz-input name="<%= fieldName %>" type="hidden" [(ngModel)]="filters.<%= fieldName %>" (change)="this.changeData()" />
-                        <%_ } else if (fields[idx].fieldIsEnum) { _%>
-                        <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
-                            <nz-option *ngFor="let value of <%= fieldName %>Text.filter;"
-                                       [nzLabel]="value.text"
-                                       [nzValue]="value.value">
-                            </nz-option>
-                        </nz-select>
-                        <%_ } _%>
-                    </nz-form-control>
-                </nz-form-item>
-            </standard-form-row>
-            <%_ } _%>
-        </form>
     </ng-template>
     <%_ } _%>
 </ng-container>
