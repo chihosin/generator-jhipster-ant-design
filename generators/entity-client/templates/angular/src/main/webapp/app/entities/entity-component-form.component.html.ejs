@@ -103,7 +103,7 @@
                         <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
                         <nz-date-picker nzShowTime formControlName="<%= fieldName %>" placeholder=""></nz-date-picker>
                         <%_ } else if (fieldType === 'Boolean') { _%>
-                        <input nz-input formControlName="<%= fieldName %>" type="checkbox"/>
+                        <nz-switch formControlName="<%= fieldName %>" type="checkbox"></nz-switch>
                         <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') { _%>
                         <input nz-input formControlName="<%= fieldName %>" type="hidden"/>
                         <%_ } else if (fields[idx].fieldIsEnum) { _%>
@@ -172,7 +172,15 @@
                 const relationshipRequired = relationships[idx].relationshipRequired;
                 const translationKey = `${i18nKeyPrefix}.${relationshipName}`; _%>
             <%_ if (relationshipType === 'many-to-one' || relationshipType === 'one-to-many' || ownerSide === true) { _%>
-                <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
+                <nz-col
+                <%_ if(relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { _%>
+                    [nzSpan]="24"
+                <%_ } else { _%>
+                    [nzLg]="8"
+                    [nzMd]="12"
+                    [nzSm]="24"
+                <%_ } _%>
+                >
                     <nz-form-item>
                         <nz-form-label [nzSpan]="null" <%_ if (relationshipRequired) { _%> nzRequired <%_ } _%>><%= relationshipNameHumanized %></nz-form-label>
                         <nz-form-control [nzSpan]="null"  nzHasFeedback>
