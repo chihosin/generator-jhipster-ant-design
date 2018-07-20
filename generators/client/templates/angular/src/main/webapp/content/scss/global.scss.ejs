@@ -57,6 +57,7 @@ body {
     nz-input-number, nz-date-picker, .ant-input-number {
         width: 100%;
     }
+
     nz-picker {
         width: 100%;
         display: block;
@@ -64,18 +65,31 @@ body {
             width: 100%;
         }
     }
+
     .ant-form-item-children {
         width: 100%;
         display: block;
     }
+
+    .custom-filter-dropdown {
+        padding: 8px;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+        :nth-child(1) {
+            width: 220px;
+        }
+    }
 }
 
 /* ==========================================================================
-entity-list styles
+Entities list component styles
 ========================================================================== */
 
-.entity-list {
+.entities-list {
+
     :global {
+
         .card-info {
             margin-top: 16px;
             margin-left: 40px;
@@ -97,6 +111,7 @@ entity-list styles
                 }
             }
         }
+
         .wan {
             position: relative;
             top: -2px;
@@ -105,6 +120,7 @@ entity-list styles
             line-height: 20px;
             margin-left: 2px;
         }
+
         .block-description {
             overflow: hidden;
             text-overflow: ellipsis;
