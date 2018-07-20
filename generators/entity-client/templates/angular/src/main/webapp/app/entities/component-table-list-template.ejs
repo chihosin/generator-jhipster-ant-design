@@ -47,7 +47,7 @@
                         <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent !== 'text') { _%>
                         <input nz-input name="<%= fieldName %>" type="hidden" [(ngModel)]="filters.<%= fieldName %>"/>
                         <%_ } else if (fields[idx].fieldIsEnum) { _%>
-                        <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>">
+                        <nz-select name="<%= fieldName %>" nzMode="multiple" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>">
                             <nz-option *ngFor="let value of <%= fieldName %>Text.filter;"
                                     [nzLabel]="value.text"
                                     [nzValue]="value.value">
