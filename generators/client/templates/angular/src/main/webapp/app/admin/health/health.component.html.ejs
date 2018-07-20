@@ -51,7 +51,7 @@
                     <nz-tag [nzColor]="'red'" *ngIf="health.status === 'UNKNOWN'">{{health.status}}</nz-tag>
                 </td>
                 <td>
-                    <a>查看</a>
+                    <a (click)="openDetail(health)">查看</a>
                 </td>
             </tr>
             </tbody>
@@ -59,37 +59,28 @@
     </nz-card>
 </div>
 
-<div>
-    <h2>
-        <span jhiTranslate="health.title">Health Checks</span>
-        <button class="btn btn-primary float-right" (click)="refresh()">
-            <fa-icon [icon]="'sync'"></fa-icon> <span jhiTranslate="health.refresh.button">Refresh</span>
-        </button>
-    </h2>
-    <div class="table-responsive">
-        <table id="healthCheck" class="table table-striped">
-            <thead>
-                <tr>
-                    <th jhiTranslate="health.table.service">Service Name</th>
-                    <th class="text-center" jhiTranslate="health.table.status">Status</th>
-                    <th class="text-center" jhiTranslate="health.details.details">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let health of healthData">
-                    <td><% if (enableTranslation) { %>{{'health.indicator.' + baseName(health.name) | translate}}<% } else { %><span class="text-capitalize">{{ baseName(health.name) }}</span><% } %> {{subSystemName(health.name)}}</td>
-                    <td class="text-center">
-                        <span class="badge" [ngClass]="getBadgeClass(health.status)" jhiTranslate="{{'health.status.' + health.status}}">
-                            {{health.status}}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <a class="hand" (click)="showHealth(health)" *ngIf="health.details || health.error">
-                            <fa-icon [icon]="'eye'"></fa-icon>
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<nz-modal
+    *ngIf="showDetail"
+    [(nzVisible)]="showDetail"
+    [nzTitle]="detail.name"
+    [nzWidth]="'756px'"
+    (nzOnCancel)="showDetail = false"
+    [nzStyle]="{ top: '28px' }"
+    [nzFooter]="footer"
+>
+    <ng-template #footer></ng-template>
+    <nz-table #table [nzData]="(detail.details.details | keys)" [nzShowPagination]="false">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let entry of table.data">
+            <td>{{entry.key}}</td>
+            <td>{{readableValue(entry.value)}}</td>
+        </tr>
+        </tbody>
+    </nz-table>
+</nz-modal>

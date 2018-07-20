@@ -90,7 +90,9 @@
     [nzWidth]="'756px'"
     (nzOnCancel)="showDetail = false"
     [nzStyle]="{ top: '28px' }"
+    [nzFooter]="footer"
 >
+    <ng-template #footer></ng-template>
     <textarea nz-input rows="30" [ngModel]="detail.content"></textarea>
 </nz-modal>
 
