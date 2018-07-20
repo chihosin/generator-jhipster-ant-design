@@ -62,6 +62,14 @@
     </ng-container>
     <ng-template #basicForm>
         <nz-row nzGutter="16">
+        <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="null">ID</nz-form-label>
+                <nz-form-control [nzSpan]="null">
+                    <input nz-input value="{{<%= entityInstance %>.id}}" type="text" disabled/>
+                </nz-form-control>
+            </nz-form-item>
+        </nz-col>
         <%_ for (idx in fields) {
             const fieldName = fields[idx].fieldName;
             const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
