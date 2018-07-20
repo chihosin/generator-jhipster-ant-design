@@ -147,7 +147,7 @@
                             <nz-option *ngFor="let item of <%= fieldName %>Text.filter;" [nzLabel]="item.text"
                                     [nzValue]="item.value"></nz-option>
                         </nz-select>
-                        <button nz-button [nzLoading]="loading" nzSearch (click)="search()">确定
+                        <button nz-button nzType="primary" [nzLoading]="loading" nzSearch (click)="search()">确定
                         </button>
                     </div>
                 </nz-dropdown>
