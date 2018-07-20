@@ -56,7 +56,7 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
         private eventManager: JhiEventManager,
         private router: Router
     ) {
-        this.cleanHttpErrorListener = eventManager.subscribe('<%= jhiPrefixDashed %>App.httpError', response => {
+        this.cleanHttpErrorListener = eventManager.subscribe('<%=angularAppName%>.httpError', response => {
             let i;
             const httpErrorResponse = response.content;
             switch (httpErrorResponse.status) {
@@ -111,7 +111,7 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
                     }
             }
         });
-        this.cleanHttpAlertListener = eventManager.subscribe('<%= jhiPrefixDashed %>App.httpAlert', alert => {
+        this.cleanHttpAlertListener = eventManager.subscribe('<%=angularAppName%>.httpAlert', alert => {
             this.addAlterMessage(alert.content);
         });
     }
