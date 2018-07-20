@@ -27,6 +27,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Observer } from 'rxjs/index';
+import { map } from 'rxjs/operators';
 <%_ if ( fieldsContainInstant || fieldsContainZonedDateTime ) { _%>
 import * as moment from 'moment';
 import { DATE_TIME_FORMAT } from 'app/shared/constants/input.constants';
@@ -72,7 +73,7 @@ import { <%= uniqueRel.otherEntityAngularName%>Service } from 'app/entities/<%= 
     }
 }); _%>
 
-<%_ 
+<%_
 const relationShipToMany = [];
 const relationShipToOne = [];
 Object.keys(differentRelationships).forEach(key => {
@@ -115,18 +116,16 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%= field.fieldName %>Text = <%= field.fieldType %>Text;
     <%_ }
     }); _%>
-    <%_ for ( const idx in variables ) { 
+    <%_ for ( const idx in variables ) {
         const result = variables[idx].replace('[]', '[] = []'); _%>
     <%- result %>
     <%_ } _%>
     <%_ for ( idx in fields ) {
         const fieldName = fields[idx].fieldName;
         const fieldType = fields[idx].fieldType;
-        if ( fieldType === 'LocalDate' ) { _%>
-    <%= fieldName %>Dp: any;
-    <%_ } else if ( ['Instant', 'ZonedDateTime'].includes(fieldType) ) { _%>
-    <%= fieldName %>: string;
-    <%_ } _%>
+        if ( ['Instant', 'ZonedDateTime', 'LocalDate'].includes(fieldType) ) { _%>
+    <%= fieldName %>: Date;
+        <%_ } _%>
     <%_ } _%>
 
     constructor(
@@ -166,7 +165,11 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     const fieldType = fields[idx].fieldType;
                     const fieldTypeBlobContent = fields[idx].fieldTypeBlobContent; _%>
                 <%= fieldName %>: [
+                    <%_ if ( ['Instant', 'ZonedDateTime', 'LocalDate'].includes(fieldType) ) { _%>
+                    this.<%= fieldName %>,
+                    <%_ } else { _%>
                     this.<%= entityInstance %>.<%= fieldName %>,
+                    <%_ } _%>
                     [
                     <%_ for (idrx in fields[idx].fieldValidateRules) {
                         const rule = fields[idx].fieldValidateRules[idrx] _%>
@@ -187,16 +190,16 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     ],
                     [
                     <%_ if (fields[idx].fieldValidate && fields[idx].fieldValidateRules.includes('unique')) { _%>
-                        this.<%= fieldName %>AsyncValidator,
+                        this.<%= fieldName %>AsyncValidator(this.<%= entityInstance %>Service),
                     <%_ } _%>
                     ]
                 ],
                 <%_ } _%>
                 <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
-                <%= uniqueRel.relationshipFieldName %>Id: [this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id, 
+                <%= uniqueRel.relationshipFieldName %>Id: [this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id,
                     <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
                     [Validators.required]
-                    <%_ } _%> 
+                    <%_ } _%>
                 ],
                 <%_ }); _%>
             });
@@ -253,7 +256,16 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
 
     reset(e: MouseEvent) {
         e.preventDefault();
-        this.validateForm.reset(this.<%= entityInstance %>);
+        this.validateForm.reset({
+            ...this.<%= entityInstance %>,
+            <%_ for (idx in fields) {
+                const fieldName = fields[ idx ].fieldName;
+                const fieldType = fields[idx].fieldType;
+                if ([ 'Instant', 'ZonedDateTime', 'LocalDate' ].includes(fieldType)) { _%>
+            <%= fieldName %>: this.<%= fieldName %>,
+            <%_ }
+            } _%>
+        });
         for (const key in this.validateForm.controls) {
             if (key) {
                 this.validateForm.controls[key].markAsPristine();
@@ -274,8 +286,8 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         <%_ for (idx in fields) {
             const fieldName = fields[ idx ].fieldName;
             const fieldType = fields[idx].fieldType;
-            if ([ 'Instant', 'ZonedDateTime' ].includes(fieldType)) { _%>
-                this.<%= entityInstance %>.<%= fieldName %> = moment(this.<%= fieldName %>, DATE_TIME_FORMAT);
+            if ([ 'Instant', 'ZonedDateTime', 'LocalDate' ].includes(fieldType)) { _%>
+        value.<%= fieldName %> = value.<%= fieldName %> ? moment(value.<%= fieldName %>.getTime()) : null;
         <%_ }
         } _%>
         if (this.<%= entityInstance %>.id !== undefined) {
@@ -339,8 +351,8 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%_ for (idx in fields) {
         const fieldName = fields[idx].fieldName;
         const fieldType = fields[idx].fieldType;
-        if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
-        this.<%= fieldName %> = moment(<%= entityInstance %>.<%= fieldName %>).format(DATE_TIME_FORMAT);
+        if (['Instant', 'ZonedDateTime', 'LocalDate'].includes(fieldType)) { _%>
+        this.<%= fieldName %> = <%= entityInstance %>.<%= fieldName %> ? new Date(moment(<%= entityInstance %>.<%= fieldName %>).valueOf()) : null;
      <%_ } } _%>
     }
 
@@ -353,17 +365,10 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         <%_ for (idrx in fields[idx].fieldValidateRules) {
             const rule = fields[idx].fieldValidateRules[idrx] _%>
         <%_ if (rule === 'unique') { _%>
-        <%= fieldName %>AsyncValidator(control: FormControl) {
-            return Observable.create((observer: Observer<ValidationErrors>) => {
-                setTimeout(() => {
-                    if (control.value === '1024') {
-                        observer.next({ error: true, duplicated: true });
-                    } else {
-                        observer.next(null);
-                    }
-                    observer.complete();
-                }, 1000);
-            });
+        <%= fieldName %>AsyncValidator(<%= entityInstance %>Service: <%= entityAngularName %>Service) {
+            return (control: FormControl) => <%= entityInstance %>Service.search({query: `<%= fieldName %>:${control.value}`})
+            .pipe(map((<%= entityInstance %>: HttpResponse<I<%= entityAngularName %>[]>) =>
+                    <%= entityInstance %>.body.length > 0 ? {error: true, duplicated: true} : null));
         }
         <%_ } _%>
         <%_ } _%>
@@ -381,7 +386,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             (res: HttpErrorResponse) => this.onError(res.message)
         );
     }
-    
+
     <%= uniqueRel.otherEntityName %>FilterOption(inputValue: string, item: I<%= uniqueRel.otherEntityAngularName %>): boolean {
         return item.id.toString().indexOf(inputValue)> -1;
     }
@@ -394,7 +399,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         }
     }
     <%_ }); _%>
-    
+
     <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
     loadMore<%= relationshipNameCapitalizedPlural %>(holdData: boolean, value: any): void {
         if (!holdData) {
@@ -405,7 +410,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             return;
         }
         this.parentPagingInfo.isLoading = true;
-        
+
         let queryStr = '*:*';
         if (this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id) {
             queryStr = `id:${this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id}`;

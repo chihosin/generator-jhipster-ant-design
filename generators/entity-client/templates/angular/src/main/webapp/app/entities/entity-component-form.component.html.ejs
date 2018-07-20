@@ -130,11 +130,11 @@
                                 检查中...
                             </ng-container>
                         <%_ } else if (rule === 'minlength') { _%>
-                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('minLength')">
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('minlength')">
                                 请输入不少于 <%= fields[idx].fieldValidateRulesMinlength %> 个字符
                             </ng-container>
                         <%_ } else if (rule === 'maxlength') { _%>
-                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('maxLength')">
+                            <ng-container *ngIf="validateForm.get('<%= fieldName %>').hasError('maxlength')">
                                 请输入不多于 <%= fields[idx].fieldValidateRulesMaxlength %> 个字符
                             </ng-container>
                         <%_ } else if (rule === 'min') { _%>
@@ -180,14 +180,14 @@
                             <nz-select style="width: 100%;" name="<%= relationshipName %>"
                                 [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"
 
-                                (nzOpenChange)="loadMore<%= relationshipNameCapitalizedPlural %>()" 
-                                (nzScrollToBottom)="loadMore<%= relationshipNameCapitalizedPlural %>(true)" 
+                                (nzOpenChange)="loadMore<%= relationshipNameCapitalizedPlural %>()"
+                                (nzScrollToBottom)="loadMore<%= relationshipNameCapitalizedPlural %>(true)"
                                 (nzOnSearch)="loadMore<%= relationshipNameCapitalizedPlural %>(false, $event)"
 
                                 formControlName="<%=relationshipFieldName %>Id"
                                 nzAllowClear nzShowSearch nzServerSearch>
-                                <nz-option *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>;" 
-                                    [nzValue]="<%=otherEntityName %>Option.id" 
+                                <nz-option *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>;"
+                                    [nzValue]="<%=otherEntityName %>Option.id"
                                     [nzLabel]="<%=otherEntityName %>Option.id"></nz-option>
                                 <nz-option *ngIf="parentPagingInfo.isLoading" nzDisabled nzCustomContent>
                                 <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
