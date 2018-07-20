@@ -20,9 +20,8 @@
 <div class="wrapper">
     <nz-header>
         <div class="top-nav-wrap">
-            <div class="logo" [ngStyle]="{'width': isCollapsed ? '80px' : '200px' }" style="text-align: center; color: #fff;">
-                <span *ngIf="!isCollapsed">I'm logo</span>
-                <span *ngIf="isCollapsed">Logo</span>
+            <div [ngStyle]="{'width': isCollapsed ? '80px' : '200px' }" style="text-align: center; color: #fff;">
+                <div [ngStyle]="{'width': isCollapsed ? '40px' : '160px', 'marginLeft': isCollapsed ? '20px' : '24px' }" style="height:100%;background: rgba(255, 255, 255, 0.1);"></div>
             </div>
             <nz-layout class="main">
                 <div>
@@ -31,8 +30,8 @@
                            [class.anticon-menu-unfold]="isCollapsed"
                            (click)="isCollapsed=!isCollapsed"></i>
                     </div>
-                    <<%= jhiPrefixDashed %>-search class="search-box"></<%= jhiPrefixDashed %>-search>
-                    <ul class="top-nav">
+                    <<%= jhiPrefixDashed %>-search *ngIf="isAuthenticated()" class="search-box"></<%= jhiPrefixDashed %>-search>
+                    <ul *ngIf="isAuthenticated()" class="top-nav">
                         <li>
                             <<%= jhiPrefixDashed %>-notify></<%= jhiPrefixDashed %>-notify>
                         </li>

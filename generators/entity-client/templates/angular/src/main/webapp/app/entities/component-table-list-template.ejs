@@ -108,12 +108,18 @@
     <nz-table
         #datagrid
         nzShowSizeChanger
-        [nzFrontPagination]="true"
         [nzData]="<%= entityInstancePlural %>"
         [nzLoading]="loading"
         [(nzPageIndex)]="pageIndex"
         [(nzPageSize)]="pageSize"
         [nzShowTotal]="pageMessage"
+        <%_ if (pagination === 'pagination' || pagination === 'pager') { _%>
+        [nzFrontPagination]="false"
+        [(nzTotal)]="totalItems"
+        (nzPageIndexChange)="loadAll()"
+        <%_ } else { _%>
+        [nzFrontPagination]="true"
+        <%_ } _%>
         (nzPageSizeChange)="loadAll(true)">
         <ng-template #pageMessage>
             <span class="mr-md">共 {{totalItems}} 项</span>

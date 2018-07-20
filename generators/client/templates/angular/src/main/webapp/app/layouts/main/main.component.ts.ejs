@@ -27,6 +27,7 @@ import { Title } from '@angular/platform-browser';
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { Subscription } from 'rxjs/index';
 import { JhiEventManager } from 'ng-jhipster';
+import { Principal } from 'app/core';
 import { MAIN_MENU } from 'app/shared';
 import { LoginService } from 'app/core/login/login.service';
 
@@ -43,6 +44,7 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
     mainMenu = MAIN_MENU;
 
     constructor(
+        private principal: Principal,
         <%_ if (enableTranslation) { _%>
         private jhiLanguageHelper: JhiLanguageHelper,
         <%_ } else { _%>
@@ -141,6 +143,10 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
             this.eventManager.destroy(this.cleanHttpErrorListener);
             this.alerts = [];
         }
+    }
+
+    isAuthenticated() {
+        return this.principal.isAuthenticated();
     }
 
     logout() {
