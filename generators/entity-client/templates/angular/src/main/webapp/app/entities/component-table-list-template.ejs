@@ -2,6 +2,14 @@
 <nz-card [nzBordered]="false">
     <form nz-form [nzLayout]="'inline'" (ngSubmit)="search()" class="filter-form">
         <nz-row>
+            <nz-col nzMd="8" nzSm="24">
+                <nz-form-item>
+                    <nz-form-label [nzSpan]="6" nzFor="id">ID</nz-form-label>
+                    <nz-form-control>
+                        <input nz-input name="id" placeholder="" type="text" [(ngModel)]="filters.id"/>
+                    </nz-form-control>
+                </nz-form-item>
+            </nz-col>
             <%_ for (idx in fields) {
                 const fieldName = fields[idx].fieldName;
                 const fieldNameCapitalized = fields[idx].fieldNameCapitalized;
@@ -24,7 +32,7 @@
                     fieldInputType = 'hidden';
                 }
                 _%>
-            <nz-col nzMd="8" nzSm="24" <%_ if( idx > 1 ) { _%> *ngIf="expandSearchForm" <%_ } _%>>
+            <nz-col nzMd="8" nzSm="24" <%_ if( idx > 0 ) { _%> *ngIf="expandSearchForm" <%_ } _%>>
                 <nz-form-item>
                     <nz-form-label [nzSpan]="6" nzFor="<%= fieldName %>"><%= fieldTitle %></nz-form-label>
                     <nz-form-control>
@@ -62,7 +70,7 @@
                     class="search-form-control">
                 <button nz-button type="submit" [nzType]="'primary'" [nzLoading]="loading">查询</button>
                 <button nz-button type="reset" (click)="clear()" class="mx-sm">重置</button>
-                <%_ if (fields.length > 2) { _%>
+                <%_ if (fields.length > 1) { _%>
                 <a (click)="expandSearchForm=!expandSearchForm">
                     {{expandSearchForm ? '收起' : '展开'}}
                     <i class="anticon" [class.anticon-down]="!expandSearchForm"
@@ -128,6 +136,19 @@
         <tr>
             <th nzShowCheckbox [nzChecked]="selectedAll" [nzIndeterminate]="selectedIndeterminate"
                 (nzCheckedChange)="updateSelected($event)"></th>
+            <th nzShowSort nzSortKey="id">
+            ID
+            <nz-dropdown nzTrigger="click" [nzClickHide]="false">
+                <i class="anticon anticon-filter ant-table-filter-icon"
+                [class.ant-table-filter-selected]="filters.id"
+                nz-dropdown></i>
+                <div class="custom-filter-dropdown">
+                    <input nz-input name="id" id="list-filter-id" placeholder="" type="text" [(ngModel)]="filters.id"/>
+                    <button nz-button nzType="primary" [nzLoading]="loading" nzSearch (click)="search()">确定
+                    </button>
+                </div>
+            </nz-dropdown>
+            </th>
             <%_ for (idx in fields) {
                 const fieldName = fields[idx].fieldName;
                 const fieldTitle = fields[idx].javadoc ? fields[idx].javadoc: fields[idx].fieldNameHumanized;
@@ -189,7 +210,7 @@
         <tr *ngFor="let item of datagrid.data ;trackBy: trackId">
             <td nzShowCheckbox [nzChecked]="selectedComparator(item)"
                 (nzCheckedChange)="updateSelected($event, item)"></td>
-
+            <td>{{item.id}}</td>
             <%_ for (idx in fields) {
                 const fieldName = fields[idx].fieldName;
                 const fieldTitle = fields[idx].javadoc ? fields[idx].javadoc: fields[idx].fieldNameHumanized;
