@@ -152,8 +152,6 @@
                     </div>
                 </nz-dropdown>
             </th>
-            <%_ } else if (fieldType === 'LocalDate') { _%>
-            <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
             <%_ } else { _%>
             <th nzShowSort nzSortKey="<%= fieldName %>">
                 <%= fieldTitle %>
@@ -162,7 +160,21 @@
                     [class.ant-table-filter-selected]="filters.<%= fieldName %>"
                     nz-dropdown></i>
                     <div class="custom-filter-dropdown">
-                        <input type="text" nz-input name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>">
+                        <%_ if (fields[idx].fieldType === 'String') { _%>
+                        <input nz-input name="<%= fieldName %>" id="list-filter-<%= fieldName %>" placeholder="" type="text" [(ngModel)]="filters.<%= fieldName %>"/>
+                        <%_ } else if (['Integer', 'Long'].includes(fieldType)) { _%>
+                        <nz-input-number name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [nzStep]="1" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                        <%_ } else if (['Float', 'Double'].includes(fieldType)) { _%>
+                        <nz-input-number name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [nzStep]="0.1" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                        <%_ } else if (fieldType === 'BigDecimal') { _%>
+                        <nz-input-number name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [nzStep]="0.01" [(ngModel)]="filters.<%= fieldName %>"></nz-input-number>
+                        <%_ } else if (fieldType === 'LocalDate') { _%>
+                        <nz-date-picker name="<%= fieldName %>" id="list-filter-<%= fieldName %>" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
+                        <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
+                        <nz-date-picker nzShowTime name="<%= fieldName %>" id="list-filter-<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
+                        <%_ } else if (fieldType === 'Boolean') { _%>
+                        <input nz-input name="<%= fieldName %>" id="list-filter-<%= fieldName %>" type="checkbox" [(ngModel)]="filters.<%= fieldName %>"/>
+                        <%_ } _%>
                         <button nz-button nzType="primary" [nzLoading]="loading" nzSearch (click)="search()">确定
                         </button>
                     </div>
@@ -186,8 +198,6 @@
 
             <%_ if (fields[idx].fieldIsEnum) { _%>
             <td>{{<%= fieldName %>Text.text[item.<%= fieldName %>]}}</td>
-            <%_ } else if (fieldType === 'LocalDate') { _%>
-            <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
             <%_ } else { _%>
             <td>{{item.<%= fieldName %>}}</td>
             <%_ } _%>
