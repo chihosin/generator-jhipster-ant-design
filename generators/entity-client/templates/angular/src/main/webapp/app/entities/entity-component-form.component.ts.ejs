@@ -202,6 +202,15 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     <%_ } _%>
                 ],
                 <%_ }); _%>
+                <%_ relationShipToMany.forEach(uniqueRel =>{ 
+                console.log(uniqueRel)    
+                _%>
+                <%= uniqueRel.relationshipNamePlural %>: [this.<%= entityInstance %>.<%=uniqueRel.relationshipNamePlural %>,
+                    <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
+                    [Validators.required]
+                    <%_ } _%>
+                ],
+                <%_ }); _%>
             });
         };
         this.isSaving = false;
@@ -380,7 +389,10 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             query: '*:*',
             paged: false
         }).subscribe(
-            (res: HttpResponse<I<%= uniqueRel.otherEntityAngularName %>[]>) => {
+            (res: HttpResponse<any[]>) => {
+                res.body.forEach(d=>{
+                        this.demoParent.<%= uniqueRel.relationshipFieldNamePlural %>.some(rel=>rel.id === d.id)? d.direction = 'right': d.direction = 'left';
+                    });
                 this.<%= uniqueRel.relationshipFieldNamePlural %> = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
@@ -397,6 +409,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         }else if(ret.from === 'right'){
             this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.filter(d=>ret.list.some(chose=>chose.id !== d.id))
         }
+        this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].setValue(this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>);
     }
     <%_ }); _%>
 
