@@ -63,7 +63,7 @@
                             <nz-col nzSpan="16">
                                 <nz-input-group nzPrefixIcon="anticon anticon-mail" nzSize="large">
                                     <input type="text" nz-input formControlName="verifyCode" placeholder="verifyCode"
-                                           [disabled]="!validateForm.get('phoneNumber').dirty || validateForm.get('phoneNumber').errors">
+                                           [attr.disabled]="!validateForm.get('phoneNumber').dirty || validateForm.get('phoneNumber').errors">
                                 </nz-input-group>
                                 <nz-form-explain
                                         *ngIf="validateForm.get('verifyCode').dirty && validateForm.get('verifyCode').errors">
