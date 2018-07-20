@@ -38,9 +38,9 @@ import { LoginService } from 'app/core/login/login.service';
 })
 export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy {
 
-    alerts: any[];
     isCollapsed: boolean;
     cleanHttpErrorListener: Subscription;
+    cleanHttpAlertListener: Subscription;
     mainMenu = MAIN_MENU;
 
     constructor(
@@ -56,7 +56,6 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
         private eventManager: JhiEventManager,
         private router: Router
     ) {
-        this.alerts = [];
         this.cleanHttpErrorListener = eventManager.subscribe('<%= jhiPrefixDashed %>App.httpError', response => {
             let i;
             const httpErrorResponse = response.content;
@@ -112,6 +111,9 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
                     }
             }
         });
+        this.cleanHttpAlertListener = eventManager.subscribe('<%= jhiPrefixDashed %>App.httpAlert', alert => {
+            this.addAlterMessage(alert.content);
+        });
     }
 
     private getPageTitle(routeSnapshot: ActivatedRouteSnapshot) {
@@ -124,6 +126,10 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
 
     private addErrorMessage(message, key?, data?) {
         this.messageService.error(message);
+    }
+
+    private addAlterMessage(message, key?, data?) {
+        this.messageService.success(message);
     }
 
     ngOnInit() {
@@ -141,7 +147,9 @@ export class <%=jhiPrefixCapitalized%>MainComponent implements OnInit, OnDestroy
     ngOnDestroy() {
         if (this.cleanHttpErrorListener !== undefined && this.cleanHttpErrorListener !== null) {
             this.eventManager.destroy(this.cleanHttpErrorListener);
-            this.alerts = [];
+        }
+        if (this.cleanHttpAlertListener !== undefined && this.cleanHttpAlertListener !== null) {
+            this.eventManager.destroy(this.cleanHttpAlertListener);
         }
     }
 
