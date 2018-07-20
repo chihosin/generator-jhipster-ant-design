@@ -414,6 +414,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.filter(d=>ret.list.some(chose=>chose.id !== d.id))
         }
         this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].setValue(this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>);
+        this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].markAsDirty();
     }
     <%_ }); _%>
 

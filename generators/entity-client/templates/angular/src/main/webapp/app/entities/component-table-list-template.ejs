@@ -225,6 +225,10 @@
 
             <%_ if (fields[idx].fieldIsEnum) { _%>
             <td>{{<%= fieldName %>Text.text[item.<%= fieldName %>]}}</td>
+            <%_ } else if(fieldType === 'Boolean') { _%>
+            <td>
+                <nz-badge nzStatus="{{item.<%= fieldName %>? 'success' : 'error'}}" nzText="{{item.<%= fieldName %>}}"></nz-badge>
+            </td>
             <%_ } else { _%>
             <td>{{item.<%= fieldName %>}}</td>
             <%_ } _%>
