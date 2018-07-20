@@ -80,7 +80,7 @@
             <nz-col [nzLg]="8" [nzMd]="12" [nzSm]="24">
                 <nz-form-item>
                     <nz-form-label [nzSpan]="null" <% if (fields[idx].fieldValidate === true && fields[idx].fieldValidateRules.includes('required')) { %> nzRequired<% } %>><%= fieldTitle %></nz-form-label>
-                    <nz-form-control [nzSpan]="null" <% if (fields[idx].fieldValidate === true) { %> nzHasFeedback<% } %>>
+                    <nz-form-control [nzSpan]="null" <% if (fields[idx].fieldValidate === true && fieldType !== 'Boolean') { %> nzHasFeedback<% } %>>
                         <%_ if (fields[idx].fieldType === 'String') { _%>
                         <input nz-input formControlName="<%= fieldName %>" placeholder="" type="text"/>
                         <%_ } else if (['byte[]', 'ByteBuffer'].includes(fieldType) && fieldTypeBlobContent === 'text') { _%>
