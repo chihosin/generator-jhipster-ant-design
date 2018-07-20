@@ -17,7 +17,7 @@
  limitations under the License.
 -%>
 <nz-card *ngIf="!<%= entityInstance %>" [nzBordered]="false" nzLoading></nz-card>
-<form class="entity-form" *ngIf="<%= entityInstance %>" nz-form [formGroup]="validateForm" (ngSubmit)="save($event,validateForm.value)">
+<form *ngIf="<%= entityInstance %>" nz-form [formGroup]="validateForm" (ngSubmit)="save($event,validateForm.value)">
     <ng-container [ngSwitch]="mode">
         <ng-container *ngSwitchCase="'cardForm'">
             <nz-card [nzBordered]="true" nzTitle="基础" [nzExtra]="extraTemplate">
@@ -38,23 +38,8 @@
             <nz-tabset [nzTabPosition]="'left'">
                 <nz-tab [nzTitle]="'基础'">
                     <nz-card class="tab-form-card" [nzBordered]="false"
-                             style="margin-left: -24px;margin-bottom: 0 !important;"
-                             [nzActions]="[null,null,null,action]">
+                             style="margin-left: -24px;margin-bottom: 0 !important;">
                         <ng-container [ngTemplateOutlet]="basicForm"></ng-container>
-                        <ng-template #action>
-                            <nz-form-item style="margin-bottom: 0;">
-                                <nz-form-control>
-                                    <button nz-button nzType="primary" [disabled]="!validateForm.valid || validateForm.pristine"
-                                            [nzLoading]="isSaving">
-                                        保存
-                                    </button>
-                                    <button class="ml-sm" nz-button (click)="reset($event)"
-                                            [disabled]="isSaving || validateForm.pristine">
-                                        重置
-                                    </button>
-                                </nz-form-control>
-                            </nz-form-item>
-                        </ng-template>
                     </nz-card>
                 </nz-tab>
             </nz-tabset>

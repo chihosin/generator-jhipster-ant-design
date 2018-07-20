@@ -42,7 +42,16 @@ export class <%= entityAngularName %>ModalService {
         const contentClose = () => modal.close();
         modal = this.modalService.create({
             nzTitle: '<%= entityClassPlural %>',
-            nzFooter: null,
+            nzFooter: [
+                {
+                    label: '编辑',
+                    type: 'primary',
+                    onClick: () => {
+                        this.createEditModal(id);
+                        contentClose();
+                    }
+                }
+            ],
             nzContent: <%= entityAngularName %>ViewComponent,
             nzWidth: '800px',
             nzBodyStyle: {padding: 0},
@@ -66,7 +75,33 @@ export class <%= entityAngularName %>ModalService {
             const contentClose = () => modal.close();
             modal = this.modalService.create({
                 nzTitle: '<%= entityClassPlural %>',
-                nzFooter: null,
+                nzFooter: [
+                    {
+                        label: '重置',
+                        disabled(contentComponentInstance): boolean {
+                            return contentComponentInstance.isSaving || (contentComponentInstance.validateForm && contentComponentInstance.validateForm.pristine);
+                        },
+                        loading(contentComponentInstance): boolean {
+                            return contentComponentInstance.isSaving;
+                        },
+                        onClick(contentComponentInstance): void {
+                            contentComponentInstance.reset(null);
+                        }
+                    },
+                    {
+                        label: '保存',
+                        type: 'primary',
+                        disabled(contentComponentInstance): boolean {
+                            return contentComponentInstance.isSaving || (contentComponentInstance.validateForm && contentComponentInstance.validateForm.pristine);
+                        },
+                        loading(contentComponentInstance): boolean {
+                            return contentComponentInstance.isSaving;
+                        },
+                        onClick(contentComponentInstance): void {
+                            contentComponentInstance.save(null, contentComponentInstance.validateForm && contentComponentInstance.validateForm.value);
+                        }
+                    }
+                ],
                 nzContent: <%= entityAngularName %>FormComponent,
                 nzWidth: '800px',
                 nzBodyStyle: {padding: 0},

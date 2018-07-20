@@ -202,8 +202,8 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                     <%_ } _%>
                 ],
                 <%_ }); _%>
-                <%_ relationShipToMany.forEach(uniqueRel =>{ 
-                console.log(uniqueRel)    
+                <%_ relationShipToMany.forEach(uniqueRel =>{
+                console.log(uniqueRel)
                 _%>
                 <%= uniqueRel.relationshipNamePlural %>: [this.<%= entityInstance %>.<%=uniqueRel.relationshipNamePlural %>,
                     <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
@@ -263,8 +263,10 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         }
     }
 
-    reset(e: MouseEvent) {
-        e.preventDefault();
+    reset($event: MouseEvent) {
+        if ($event) {
+            $event.preventDefault();
+        }
         this.validateForm.reset({
             ...this.<%= entityInstance %>,
             <%_ for (idx in fields) {
@@ -284,7 +286,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     }
 
     save($event, value) {
-        $event.preventDefault();
+        if ($event) {
+            $event.preventDefault();
+        }
         for (const key in this.validateForm.controls) {
             if (key) {
                 this.validateForm.controls[key].markAsDirty();
