@@ -178,8 +178,6 @@
                         <nz-form-control [nzSpan]="null"  nzHasFeedback>
                     <%_ if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
                             <nz-select style="width: 100%;" name="<%= relationshipName %>"
-                                [(ngModel)]="<%= entityInstance %>.<%=relationshipFieldName %>"
-
                                 (nzOpenChange)="loadMore<%= relationshipNameCapitalizedPlural %>()" 
                                 (nzScrollToBottom)="loadMore<%= relationshipNameCapitalizedPlural %>(true)" 
                                 (nzOnSearch)="loadMore<%= relationshipNameCapitalizedPlural %>(false, $event)"
