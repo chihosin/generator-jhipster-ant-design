@@ -168,7 +168,7 @@
             this.currentSearch += ` AND <%= fieldName %>:\"${moment(new Date(this.filters.<%= fieldName %>).getTime()).format("YYYY-MM-DD")}\"`;
         }
         <%_ } else if( fieldType === 'Boolean') { _%>
-        if (this.filters.<%= fieldName %>) {
+        if (this.filters.<%= fieldName %> !== null) {
             this.currentSearch += ` AND <%= fieldName %>:(${this.filters.<%= fieldName %>})`;
         }
         <%_ } else { _%>

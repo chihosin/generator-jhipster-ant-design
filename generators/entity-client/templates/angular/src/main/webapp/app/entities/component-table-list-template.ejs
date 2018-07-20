@@ -51,7 +51,7 @@
                         <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
                         <nz-date-picker nzShowTime name="<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
                         <%_ } else if (fieldType === 'Boolean') { _%>
-                        <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
+                        <nz-select name="<%= fieldName %>" nzMode="multiple" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
                             <nz-option [nzLabel]="'是'" [nzValue]="true"></nz-option>
                             <nz-option [nzLabel]="'否'" [nzValue]="false"></nz-option>
                         </nz-select>
@@ -197,8 +197,8 @@
                         <%_ } else if (['Instant', 'ZonedDateTime'].includes(fieldType)) { _%>
                         <nz-date-picker nzShowTime name="<%= fieldName %>" id="list-filter-<%= fieldName %>" placeholder="" [(ngModel)]="filters.<%= fieldName %>"></nz-date-picker>
                         <%_ } else if (fieldType === 'Boolean') { _%>
-                        <nz-select name="<%= fieldName %>" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
-                            
+                        <nz-select name="<%= fieldName %>" nzMode="multiple" placeholder="" nzAllowClear [(ngModel)]="filters.<%= fieldName %>" (ngModelChange)="this.changeData()" >
+
                         <nz-option [nzLabel]="'是'" [nzValue]="true"></nz-option>
                             <nz-option [nzLabel]="'否'" [nzValue]="false"></nz-option>
                         </nz-select>
