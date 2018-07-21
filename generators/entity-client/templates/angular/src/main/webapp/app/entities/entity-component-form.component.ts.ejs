@@ -100,7 +100,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     @Input() contentClose: Function;
     validateForm: FormGroup;
     isSaving: boolean;
-    <%_ if(relationShipToOne){ _%>
+    <%_ if(relationShipToOne.length > 0){ _%>
     parentPagingInfo = {
         page: 0,
         size: 10,
