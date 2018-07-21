@@ -192,6 +192,15 @@
                                 <i class="anticon anticon-loading anticon-spin loading-icon"></i> Loading Data...
                                 </nz-option>
                             </nz-select>
+                        <%_ if (relationships[idx].relationshipValidate === true) { _%>
+                            <nz-form-explain *ngIf="validateForm.get('<%=relationshipFieldName %>Id').dirty && validateForm.get('<%=relationshipFieldName %>Id').errors">
+                        <%_ if (relationshipRequired) { _%>
+                                <ng-container *ngIf="validateForm.get('<%=relationshipFieldName %>Id').hasError('required')">
+                                    请选择
+                                </ng-container>
+                        <%_ } _%>
+                            </nz-form-explain>
+                        <%_ } _%>
                     <%_ } else if ((relationshipType === 'many-to-many' && relationships[idx].ownerSide === true)) { _%>
                             <nz-transfer nzShowSearch
                                     [nzDataSource]="<%= relationshipFieldNamePlural %>"
@@ -208,15 +217,15 @@
                                     <a nz-button (click)="reload<%= relationshipNameCapitalizedPlural %>()" [nzSize]="'small'" style="float: right; margin: 5px;">reload</a>
                                 </ng-template>
                             </nz-transfer>
-                    <%_ } _%>
-                    <%_ if (relationships[idx].relationshipValidate === true) { _%>
-                            <nz-form-explain *ngIf="validateForm.get('<%=relationshipFieldName %>Id').dirty && validateForm.get('<%=relationshipFieldName %>Id').errors">
+                        <%_ if (relationships[idx].relationshipValidate === true) { _%>
+                            <nz-form-explain *ngIf="validateForm.get('<%=otherEntityNamePlural %>').dirty && validateForm.get('<%=otherEntityNamePlural %>').errors">
                         <%_ if (relationshipRequired) { _%>
-                                <ng-container *ngIf="validateForm.get('<%=relationshipFieldName %>Id').hasError('required')">
+                                <ng-container *ngIf="validateForm.get('<%=otherEntityNamePlural %>').hasError('required')">
                                     请选择
                                 </ng-container>
                         <%_ } _%>
                             </nz-form-explain>
+                        <%_ } _%>
                     <%_ } _%>
                         </nz-form-control>
                     </nz-form-item>

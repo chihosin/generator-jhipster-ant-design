@@ -401,7 +401,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         }).subscribe(
             (res: HttpResponse<any[]>) => {
                 res.body.forEach(d=>{
-                        this.demoParent.<%= uniqueRel.relationshipFieldNamePlural %>.some(rel=>rel.id === d.id)? d.direction = 'right': d.direction = 'left';
+                        this.<%= entityInstance %>.<%= uniqueRel.relationshipFieldNamePlural %>.some(rel=>rel.id === d.id)? d.direction = 'right': d.direction = 'left';
                     });
                 this.<%= uniqueRel.relationshipFieldNamePlural %> = res.body;
             },
