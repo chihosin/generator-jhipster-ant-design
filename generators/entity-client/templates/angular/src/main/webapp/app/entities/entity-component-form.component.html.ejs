@@ -183,9 +183,8 @@
                                 (nzOpenChange)="loadMore<%= relationshipNameCapitalizedPlural %>()"
                                 (nzScrollToBottom)="loadMore<%= relationshipNameCapitalizedPlural %>(true)"
                                 (nzOnSearch)="loadMore<%= relationshipNameCapitalizedPlural %>(false, $event)"
-
-                                formControlName="<%=relationshipFieldName %>Id"
-                                nzAllowClear nzShowSearch nzServerSearch>
+                                [nzServerSearch]=true [nzAllowClear]=true [nzShowSearch]=true
+                                formControlName="<%=relationshipFieldName %>Id" >
                                 <nz-option *ngFor="let <%=otherEntityName %>Option of <%=otherEntityNamePlural.toLowerCase() %>;"
                                     [nzValue]="<%=otherEntityName %>Option.id"
                                     [nzLabel]="<%=otherEntityName %>Option.id"></nz-option>

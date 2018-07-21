@@ -437,9 +437,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
         this.parentPagingInfo.isLoading = true;
 
         let queryStr = '*:*';
-        if (this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id) {
-            queryStr = `id:${this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldName %>Id}`;
-        } else if (value) {
+        if (value) {
             queryStr = `*:*${value}*`;
         }
 
