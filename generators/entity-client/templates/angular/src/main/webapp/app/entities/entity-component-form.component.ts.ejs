@@ -212,6 +212,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 ],
                 <%_ }); _%>
             });
+            <%_ relationShipToMany.forEach(uniqueRel =>{ _%>
+            this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
+            <%_ }); _%>
         };
         this.isSaving = false;
         if (this.contentResponse) {
@@ -283,6 +286,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 this.validateForm.controls[key].updateValueAndValidity();
             }
         }
+        <%_ relationShipToMany.forEach(uniqueRel =>{ _%>
+        this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
+        <%_ }); _%>
     }
 
     save($event, value) {
@@ -408,12 +414,13 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     }
 
     change<%= uniqueRel.relationshipNameCapitalizedPlural %>(ret: any){
+        let choosed = this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].value;
         if(ret.from === 'left'){
-            this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> ? this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.concat(ret.list): ret.list;
+            choosed = choosed ? choosed.concat(ret.list) : ret.list;
         }else if(ret.from === 'right'){
-            this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %> = this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>.filter(d=>ret.list.some(chose=>chose.id !== d.id))
+            choosed = choosed.filter(d=>ret.list.some(chose=>chose.id !== d.id));
         }
-        this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].setValue(this.<%= entityInstance %>.<%=uniqueRel.relationshipFieldNamePlural %>);
+        this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].setValue(choosed);
         this.validateForm.controls['<%=uniqueRel.relationshipFieldNamePlural %>'].markAsDirty();
     }
     <%_ }); _%>
