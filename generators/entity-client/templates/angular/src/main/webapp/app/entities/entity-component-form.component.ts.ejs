@@ -426,7 +426,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
     <%_ }); _%>
 
     <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
-    loadMore<%= relationshipNameCapitalizedPlural %>(holdData: boolean, value: any): void {
+    loadMore<%= uniqueRel.relationshipNameCapitalizedPlural %>(holdData: boolean, value: any): void {
         if (!holdData) {
             this.parentPagingInfo.page = 0;
             this.parentPagingInfo.lockPaging = false;
