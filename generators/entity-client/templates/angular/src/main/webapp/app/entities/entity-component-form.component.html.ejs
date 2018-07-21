@@ -165,7 +165,7 @@
                 const otherEntityFieldCapitalized = relationships[idx].otherEntityFieldCapitalized;
                 const relationshipRequired = relationships[idx].relationshipRequired;
                 const translationKey = `${i18nKeyPrefix}.${relationshipName}`; _%>
-            <%_ if (relationshipType === 'many-to-one' || relationshipType === 'one-to-many' || ownerSide === true) { _%>
+            <%_ if (relationshipType === 'many-to-one' || ownerSide === true) { _%>
                 <nz-col
                 <%_ if(relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { _%>
                     [nzSpan]="24"
