@@ -385,7 +385,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             const rule = fields[idx].fieldValidateRules[idrx] _%>
         <%_ if (rule === 'unique') { _%>
         <%= fieldName %>AsyncValidator(<%= entityInstance %>Service: <%= entityAngularName %>Service) {
-            return (control: FormControl) => <%= entityInstance %>Service.search({query: `<%= fieldName %>:${control.value}`})
+            return (control: FormControl) => <%= entityInstance %>Service.search({query: `<%= fieldName %>:${control.value}${this.<%= entityInstance %>.id ? ` AND -id:${this.<%= entityInstance %>.id}` : ''}`})
             .pipe(map((<%= entityInstance %>: HttpResponse<I<%= entityAngularName %>[]>) =>
                     <%= entityInstance %>.body.length > 0 ? {error: true, duplicated: true} : null));
         }

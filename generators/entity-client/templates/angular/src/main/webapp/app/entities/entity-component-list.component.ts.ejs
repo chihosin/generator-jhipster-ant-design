@@ -23,7 +23,7 @@ import { HttpErrorResponse, <%_ if (pagination !== 'no') { _%>HttpHeaders, <% } 
 import { JhiEventManager, <% if (pagination !== 'no') { %>JhiParseLinks, <% } %>JhiAlertService<% if (fieldsContainBlob) { %>, JhiDataUtils<% } %> } from 'ng-jhipster';
 import { NzMessageService, NzModalRef, NzModalService } from 'ng-zorro-antd';
 import { Principal } from 'app/core';
-import { ITEMS_PER_PAGE } from 'app/shared';
+import { ITEMS_PER_PAGE, SEARCH_DEBOUNCE_TIME } from 'app/shared';
 import {
     I<%= entityAngularName %>,
     <%_ const textsAlreadyDeclared = [];
