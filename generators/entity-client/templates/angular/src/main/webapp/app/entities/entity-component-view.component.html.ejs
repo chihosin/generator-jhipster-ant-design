@@ -20,7 +20,6 @@
     <ng-container *ngSwitchCase="'basicView'">
         <nz-card [nzBordered]="false">
             <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
-            <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
         </nz-card>
     </ng-container>
     <ng-container *ngSwitchCase="'tabView'">
@@ -30,19 +29,11 @@
                     <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
                 </nz-card>
             </nz-tab>
-            <nz-tab [nzTitle]="'Relationship'">
-                <nz-card [nzBordered]="false">
-                    <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
-                </nz-card>
-            </nz-tab>
         </nz-tabset>
     </ng-container>
     <ng-container *ngSwitchCase="'cardView'">
         <nz-card [nzTitle]="'Basic'">
             <ng-container [ngTemplateOutlet]="basicDescList"></ng-container>
-        </nz-card>
-        <nz-card [nzTitle]="'Relationship'">
-            <ng-container [ngTemplateOutlet]="relationshipDescList"></ng-container>
         </nz-card>
     </ng-container>
 </ng-container>
@@ -75,11 +66,7 @@
     <desc-list-item term="<%= fieldTitle %>">{{<%= entityInstance %>.<%= fieldName %>}}</desc-list-item>
     <%_ } _%>
     <%_ } _%>
-    </desc-list>
-</ng-template>
-<ng-template #relationshipDescList>
-<nz-card *ngIf="!<%= entityInstance %>" [nzBordered]="false" nzLoading></nz-card>
-<desc-list *ngIf="<%= entityInstance %>" size="large" [title]="mode !== 'cardView' ? 'Relationship' : null" class="mb-lg">
+
     <%_ for (idx in relationships) {
     const relationshipType = relationships[idx].relationshipType;
     const ownerSide = relationships[idx].ownerSide;
@@ -128,5 +115,5 @@
     </desc-list-item>
     <%_ } _%>
     <%_ } _%>
-</desc-list>
+    </desc-list>
 </ng-template>
