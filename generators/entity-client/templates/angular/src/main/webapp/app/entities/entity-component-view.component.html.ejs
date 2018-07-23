@@ -70,7 +70,7 @@
         {{<%= entityInstance %>.<%= fieldName %>ContentType}}, {{byteSize(<%= entityInstance %>.<%= fieldName %>)}}
     </div>
     <%_ } else if(fieldType === 'Boolean'){ _%>
-    <desc-list-item term="<%= fieldTitle %>"><i class="{{<%= entityInstance %>.<%= fieldName %>? 'anticon anticon-check': 'anticon antion-close'}}"></i></desc-list-item>
+    <desc-list-item term="<%= fieldTitle %>"><i class="{{<%= entityInstance %>.<%= fieldName %>? 'anticon anticon-check': 'anticon anticon-close'}}"></i></desc-list-item>
     <%_ } else { _%>
     <desc-list-item term="<%= fieldTitle %>">{{<%= entityInstance %>.<%= fieldName %>}}</desc-list-item>
     <%_ } _%>

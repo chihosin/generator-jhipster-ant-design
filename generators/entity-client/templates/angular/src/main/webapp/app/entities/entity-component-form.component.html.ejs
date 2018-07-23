@@ -203,7 +203,7 @@
                         <%_ } _%>
                     <%_ } else if ((relationshipType === 'many-to-many' && relationships[idx].ownerSide === true)) { _%>
                             <nz-transfer nzShowSearch
-                                    [nzDataSource]="<%= relationshipFieldNamePlural %>"
+                                    [nzDataSource]="<%= relationshipFieldNamePlural.toLowerCase() %>"
                                     [nzOperations]="['to right', 'to left']"
                                     [nzListStyle]="{'width.px': 250, 'height.px': 300}"
                                     [nzFilterOption]="<%= otherEntityName %>FilterOption"
