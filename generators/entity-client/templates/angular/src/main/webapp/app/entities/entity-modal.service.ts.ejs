@@ -92,7 +92,7 @@ export class <%= entityAngularName %>ModalService {
                         label: '保存',
                         type: 'primary',
                         disabled(contentComponentInstance): boolean {
-                            return contentComponentInstance.isSaving || (contentComponentInstance.validateForm && contentComponentInstance.validateForm.pristine);
+                            return contentComponentInstance.validateForm && (!contentComponentInstance.validateForm.valid || contentComponentInstance.validateForm.pristine);
                         },
                         loading(contentComponentInstance): boolean {
                             return contentComponentInstance.isSaving;

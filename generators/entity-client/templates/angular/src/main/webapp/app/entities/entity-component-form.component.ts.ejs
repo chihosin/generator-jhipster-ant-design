@@ -203,7 +203,6 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 ],
                 <%_ }); _%>
                 <%_ relationShipToMany.forEach(uniqueRel =>{
-                console.log(uniqueRel)
                 _%>
                 <%= uniqueRel.relationshipNamePlural %>: [this.<%= entityInstance %>.<%=uniqueRel.relationshipNamePlural %>,
                     <%_ if(uniqueRel.relationshipValidate && uniqueRel.relationshipValidateRules.some(d=>d==='required')){ _%>
@@ -214,6 +213,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             });
             <%_ relationShipToMany.forEach(uniqueRel =>{ _%>
             this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
+            <%_ }); _%>
+            <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
+            this.<%= uniqueRel.relationshipNamePlural.toLowerCase() %> = [{id: this.<%= entityInstance %>.<%= uniqueRel.relationshipName %>Id}];
             <%_ }); _%>
         };
         this.isSaving = false;
@@ -228,9 +230,6 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 initForm();
             });
         }
-        <%_ for (idx in queries) { _%>
-        <%- queries[idx] %>
-        <%_ } _%>
     }
 
     <%_ if (fieldsContainBlob) { _%>
@@ -385,9 +384,19 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             const rule = fields[idx].fieldValidateRules[idrx] _%>
         <%_ if (rule === 'unique') { _%>
         <%= fieldName %>AsyncValidator(<%= entityInstance %>Service: <%= entityAngularName %>Service) {
-            return (control: FormControl) => <%= entityInstance %>Service.search({query: `<%= fieldName %>:${control.value}${this.<%= entityInstance %>.id ? ` AND -id:${this.<%= entityInstance %>.id}` : ''}`})
-            .pipe(map((<%= entityInstance %>: HttpResponse<I<%= entityAngularName %>[]>) =>
-                    <%= entityInstance %>.body.length > 0 ? {error: true, duplicated: true} : null));
+            return (control: FormControl) => {
+                if(control.value === this.<%= entityInstance %>.<%= fieldName %>){
+                    return Observable.create(observer => {
+                        observer.next(null);
+                        observer.complete();
+                    });
+                }else {
+                    return <%= entityInstance %>Service
+                        .query({ '<%= fieldName %>.equals': control.value })
+                        .pipe(map((<%= entityInstance %>: HttpResponse<I<%= entityAngularName %>[]>) =>
+                            <%= entityInstance %>.body.length > 0 ? {error: true, duplicated: true} : null))
+                }
+            };
         }
         <%_ } _%>
         <%_ } _%>
@@ -403,7 +412,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 res.body.forEach(d=>{
                         this.<%= entityInstance %>.<%= uniqueRel.relationshipFieldNamePlural %>.some(rel=>rel.id === d.id)? d.direction = 'right': d.direction = 'left';
                     });
-                this.<%= uniqueRel.relationshipFieldNamePlural %> = res.body;
+                this.<%= uniqueRel.relationshipFieldNamePlural.toLowerCase() %> = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
         );
