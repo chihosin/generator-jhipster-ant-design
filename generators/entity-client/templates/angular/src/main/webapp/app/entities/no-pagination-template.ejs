@@ -24,6 +24,7 @@
     <%_ if (searchEngine === 'elasticsearch') { _%>
     currentSearch: string;
     <%_ } _%>
+    searchDebounce: Subject<void>;
     pageIndex: number;
     pageSize: number;
     totalItems: number;
@@ -79,6 +80,8 @@
         this.selectedComparator = item => {
             return this.selected.some(value => value.id === item.id);
         };
+        this.searchDebounce = new Subject();
+        this.searchDebounce.pipe(debounceTime(SEARCH_DEBOUNCE_TIME)).subscribe(() => this.search());
     }
 
     loadAll(reset?): void {
