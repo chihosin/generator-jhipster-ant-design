@@ -81,7 +81,11 @@
             return this.selected.some(value => value.id === item.id);
         };
         this.searchDebounce = new Subject();
+        <%_ if (searchEngine === 'elasticsearch') { _%>
         this.searchDebounce.pipe(debounceTime(SEARCH_DEBOUNCE_TIME)).subscribe(() => this.search());
+        <%_ } else {_%>
+        this.searchDebounce.pipe(debounceTime(SEARCH_DEBOUNCE_TIME)).subscribe(() => this.loadAll());
+        <%_ } _%>
     }
 
     loadAll(reset?): void {
@@ -100,6 +104,7 @@
                         this.<%= entityInstancePlural %> = res.body;
                         this.totalItems = this.<%= entityInstancePlural %>.length;
                         this.sort();
+                        this.currentSearch = '';
                         this.loading = false;
                     },
                     (res: HttpErrorResponse) => this.onError(res.message)
@@ -112,7 +117,6 @@
                 this.<%= entityInstancePlural %> = res.body;
                 this.totalItems = this.<%= entityInstancePlural %>.length;
                 this.sort();
-                this.currentSearch = '';
                 this.loading = false;
             },
             (res: HttpErrorResponse) => this.onError(res.message)

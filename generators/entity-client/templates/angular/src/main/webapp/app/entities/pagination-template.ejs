@@ -80,7 +80,11 @@ constructor(
         return this.selected.some(value => value.id === item.id);
     };
     this.searchDebounce = new Subject();
+    <%_ if (searchEngine === 'elasticsearch') { _%>
     this.searchDebounce.pipe(debounceTime(SEARCH_DEBOUNCE_TIME)).subscribe(() => this.search());
+    <%_ } else {_%>
+    this.searchDebounce.pipe(debounceTime(SEARCH_DEBOUNCE_TIME)).subscribe(() => this.loadAll());
+    <%_ } _%>
 }
 
 loadAll(reset?, loadMore?): void {
@@ -140,7 +144,6 @@ loadAll(reset?, loadMore?): void {
             } else {
                 this.<%= entityInstancePlural %> = res.body;
                 this.totalItems = parseInt(res.headers.get('x-total-count'), 10);
-                this.currentSearch = '';
             }
             this.loading = false;
         },
