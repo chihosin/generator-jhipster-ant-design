@@ -409,9 +409,11 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             paged: false
         }).subscribe(
             (res: HttpResponse<any[]>) => {
-                res.body.forEach(d=>{
+                if (this.<%= entityInstance %>.<%= uniqueRel.relationshipFieldNamePlural %>) {
+                    res.body.forEach(d=>{
                         this.<%= entityInstance %>.<%= uniqueRel.relationshipFieldNamePlural %>.some(rel=>rel.id === d.id)? d.direction = 'right': d.direction = 'left';
                     });
+                }
                 this.<%= uniqueRel.relationshipFieldNamePlural.toLowerCase() %> = res.body;
             },
             (res: HttpErrorResponse) => this.onError(res.message)
