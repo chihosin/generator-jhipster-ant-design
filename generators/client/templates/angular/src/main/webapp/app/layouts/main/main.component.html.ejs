@@ -98,8 +98,8 @@
                                 </ng-container>
                                 <ng-container *ngIf="subMenuItem.subMenu">
                                     <li nz-submenu
-                                        *<%= jhiPrefix %>HasAnyAuthority="menuItem.hasAnyAuthority">
-                                        <span title class="pl-lg">{{menuItem.title}}</span>
+                                        *<%= jhiPrefix %>HasAnyAuthority="subMenuItem.hasAnyAuthority">
+                                        <span title class="pl-lg">{{subMenuItem.title}}</span>
                                         <ul>
                                             <ng-container *ngFor="let leafMenuItem of subMenuItem.subMenu">
                                                 <li *<%= jhiPrefix %>HasAnyAuthority="leafMenuItem.hasAnyAuthority"

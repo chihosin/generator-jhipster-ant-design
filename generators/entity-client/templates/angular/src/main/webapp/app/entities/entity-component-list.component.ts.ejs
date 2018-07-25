@@ -50,10 +50,13 @@ export class <%= entityAngularName %>ListComponent implements OnInit, OnDestroy 
     <%_ } else if (pagination === 'no') { _%>
 <%- include('no-pagination-template', {toArrayString: toArrayString}); -%>
     <%_ } _%>
+
+<%_ if (searchEngine === 'elasticsearch') { _%>
     updateFilter(key: string, value: any): void {
         this.filters[key] = value;
         this.search();
     }
+<%_ } _%>
 
     updateSelected(isSelected, item?: I<%= entityAngularName %>) {
         if (!item) {
