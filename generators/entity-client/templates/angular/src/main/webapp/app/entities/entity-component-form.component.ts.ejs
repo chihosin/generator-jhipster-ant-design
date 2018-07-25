@@ -78,12 +78,10 @@ const relationShipToMany = [];
 const relationShipToOne = [];
 Object.keys(differentRelationships).forEach(key => {
     const uniqueRel = differentRelationships[key][0];
-    if (uniqueRel.otherEntityAngularName !== entityAngularName) {
-        if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
-            relationShipToOne.push(uniqueRel);
-        }else if(differentRelationships[key].some(rel => (rel.ownerSide && rel.relationshipType === 'many-to-many'))){
-            relationShipToMany.push(uniqueRel);
-        }
+    if (differentRelationships[key].some(rel => rel.relationshipType === 'many-to-one' || (rel.ownerSide && rel.relationshipType === 'one-to-one'))) {
+        relationShipToOne.push(uniqueRel);
+    }else if(differentRelationships[key].some(rel => (rel.ownerSide && rel.relationshipType === 'many-to-many'))){
+        relationShipToMany.push(uniqueRel);
     }
 });
 _%>
@@ -215,7 +213,7 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
             this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
             <%_ }); _%>
             <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
-            this.<%= uniqueRel.relationshipNamePlural.toLowerCase() %> = [{id: this.<%= entityInstance %>.<%= uniqueRel.relationshipName %>Id}];
+            this.<%= uniqueRel.otherEntityNamePlural.toLowerCase() %> = [{id: this.<%= entityInstance %>.<%= uniqueRel.relationshipName %>Id}];
             <%_ }); _%>
         };
         this.isSaving = false;
