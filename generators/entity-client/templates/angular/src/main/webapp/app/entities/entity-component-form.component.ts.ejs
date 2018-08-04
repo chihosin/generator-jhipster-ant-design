@@ -210,7 +210,9 @@ export class <%= entityAngularName %>FormComponent implements OnInit {
                 <%_ }); _%>
             });
             <%_ relationShipToMany.forEach(uniqueRel =>{ _%>
-            this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
+            if (this.<%= entityInstance %>.id) {
+                this.reload<%= uniqueRel.relationshipNameCapitalizedPlural %>();
+            }
             <%_ }); _%>
             <%_ relationShipToOne.forEach(uniqueRel =>{ _%>
             this.<%= uniqueRel.otherEntityNamePlural.toLowerCase() %> = [{id: this.<%= entityInstance %>.<%= uniqueRel.relationshipName %>Id}];

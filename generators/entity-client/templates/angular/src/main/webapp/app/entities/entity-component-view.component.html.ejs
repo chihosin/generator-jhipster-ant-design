@@ -61,7 +61,10 @@
         {{<%= entityInstance %>.<%= fieldName %>ContentType}}, {{byteSize(<%= entityInstance %>.<%= fieldName %>)}}
     </div>
     <%_ } else if(fieldType === 'Boolean'){ _%>
-    <desc-list-item term="<%= fieldTitle %>"><i class="{{<%= entityInstance %>.<%= fieldName %>? 'anticon anticon-check': 'anticon anticon-close'}}"></i></desc-list-item>
+    <desc-list-item term="<%= fieldTitle %>">
+        <nz-badge nzStatus="{{<%= entityInstance %>.<%= fieldName %>? 'success' : 'error'}}"
+                      nzText="{{<%= entityInstance %>.<%= fieldName %> ? '是' : '否'}}"></nz-badge>
+    </desc-list-item>
     <%_ } else { _%>
     <desc-list-item term="<%= fieldTitle %>">{{<%= entityInstance %>.<%= fieldName %>}}</desc-list-item>
     <%_ } _%>
